@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SyncWave - Room Interface</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Geist:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#eaddff",
+                    "inverse-surface": "#e5e1e4",
+                    "on-secondary-fixed-variant": "#004e5c",
+                    "on-background": "#e5e1e4",
+                    "on-secondary": "#003640",
+                    "on-secondary-fixed": "#001f26",
+                    "tertiary-container": "#ae397b",
+                    "primary": "#d2bbff",
+                    "secondary": "#4cd7f6",
+                    "surface-container-low": "#1c1b1d",
+                    "on-primary": "#3f008e",
+                    "on-tertiary-fixed-variant": "#85145a",
+                    "secondary-fixed-dim": "#4cd7f6",
+                    "error": "#ffb4ab",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#353437",
+                    "primary-container": "#7c3aed",
+                    "on-tertiary": "#620040",
+                    "outline-variant": "#4a4455",
+                    "on-primary-fixed-variant": "#5a00c6",
+                    "error-container": "#93000a",
+                    "surface-tint": "#d2bbff",
+                    "surface": "#131315",
+                    "on-secondary-container": "#00424e",
+                    "on-primary-container": "#ede0ff",
+                    "tertiary": "#ffafd3",
+                    "surface-container": "#201f22",
+                    "tertiary-fixed": "#ffd8e7",
+                    "surface-variant": "#353437",
+                    "surface-container-lowest": "#0e0e10",
+                    "surface-bright": "#39393b",
+                    "on-error": "#690005",
+                    "inverse-on-surface": "#313032",
+                    "on-surface": "#e5e1e4",
+                    "surface-dim": "#131315",
+                    "on-surface-variant": "#ccc3d8",
+                    "primary-fixed-dim": "#d2bbff",
+                    "outline": "#958da1",
+                    "on-primary-fixed": "#25005a",
+                    "secondary-fixed": "#acedff",
+                    "tertiary-fixed-dim": "#ffafd3",
+                    "secondary-container": "#03b5d3",
+                    "on-tertiary-fixed": "#3d0026",
+                    "on-tertiary-container": "#ffdce9",
+                    "surface-container-high": "#2a2a2c",
+                    "background": "#131315",
+                    "inverse-primary": "#732ee4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "40px",
+                    "unit": "4px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "margin-desktop": "32px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "gutter": "20px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "mono-label": [
+                            "Geist"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-lg-mobile": [
+                            "Inter"
+                    ],
+                    "display-lg": [
+                            "Inter"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Geist"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "mono-label": [
+                            "13px",
+                            {
+                                    "lineHeight": "1",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.04em",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        /* Ambient Background Layering */
+        body {
+            background-color: #131315; /* background token */
+        }
+        .bg-ambient {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .bg-ambient::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 70vw;
+            height: 70vw;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%); /* primary-container */
+            filter: blur(100px);
+        }
+        .bg-ambient::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(76, 215, 246, 0.1) 0%, transparent 70%); /* secondary */
+            filter: blur(100px);
+        }
+
+        /* Equalizer Animation */
+        .eq-bar {
+            width: 6px;
+            background: linear-gradient(to top, #d2bbff, #4cd7f6); /* primary to secondary */
+            border-radius: 3px;
+            animation: bounce 1s infinite alternate ease-in-out;
+            transform-origin: bottom;
+        }
+        .eq-bar:nth-child(2) { animation-delay: 0.2s; }
+        .eq-bar:nth-child(3) { animation-delay: 0.4s; }
+        .eq-bar:nth-child(4) { animation-delay: 0.1s; }
+        .eq-bar:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes bounce {
+            0% { transform: scaleY(0.2); }
+            100% { transform: scaleY(1); }
+        }
+
+        /* Floating Emoji Particles */
+        .emoji-particle {
+            position: absolute;
+            bottom: 20px;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatUp 3s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            10% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+            100% { transform: translateY(-150px) scale(1); opacity: 0; }
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(32, 31, 34, 0.6); /* surface-container with opacity */
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(204, 195, 216, 0.2); /* on-surface-variant low op */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(204, 195, 216, 0.4);
+        }
+    </style>
+</head>
+<body class="text-on-background min-h-screen overflow-hidden selection:bg-primary-container selection:text-on-primary-container">
+<div class="bg-ambient"></div>
+<!-- TopNavBar -->
+<nav class="fixed top-4 left-4 right-4 z-50 flex justify-between items-center px-6 py-3 bg-surface/60 backdrop-blur-xl border-b border-white/10 shadow-[0_0_20px_rgba(210,187,255,0.3)] rounded-b-xl lg:rounded-xl">
+<div class="flex items-center gap-lg">
+<span class="font-display-lg text-display-lg bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">SyncWave</span>
+<div class="hidden md:flex gap-md ml-lg">
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors px-4 py-2 rounded-full font-label-caps text-label-caps" href="#">Discover</a>
+<!-- Active State Applied -->
+<a class="text-primary border-b-2 border-primary pb-1 px-4 py-2 font-label-caps text-label-caps" href="#">Rooms</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors px-4 py-2 rounded-full font-label-caps text-label-caps" href="#">Trending</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-label-caps text-label-caps hover:bg-primary transition-colors flex items-center gap-2 scale-95 duration-200">
+<span class="material-symbols-outlined" style="font-size: 18px;">login</span>
+                Join Room
+            </button>
+<button class="text-on-surface-variant hover:text-on-surface p-2 rounded-full hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface p-2 rounded-full hover:bg-white/5 transition-colors relative" onclick="toggleAccessibility()">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface p-2 rounded-full hover:bg-white/5 transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full"></span>
+</button>
+<img alt="A close up portrait of a young woman with a neutral expression, illuminated by soft studio lighting against a dark background." class="w-8 h-8 rounded-full border border-white/20 ml-2 object-cover" data-alt="A close up portrait of a young woman with a neutral expression, illuminated by soft studio lighting against a dark background, embodying a sleek and modern user profile avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCidWjcqrQ8Mmy3UgQVB98-gpXxgSBvGDWv4ZMnQLxdT3yHRYnj08eqZIf4o8Xs4NQz141laEd16dcJlqb_b7YZk62JLzQlMKnYHuJcyswqWQKUBoCqyfsv6oUcmA4q_PcAcHyifP00yUQQalvxF8YV9JgzR10DXMXbnYxZC6yLYGmd8kArQMmhEj7p0qFJfQE38noxiivJsJlP87yb4HFu9SYhyFqYlfMWazcNuVklKZgMVqcMLEYA5o3sEBpW0TSWB8W0KZmErBc"/>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-4 top-24 bottom-4 w-[280px] rounded-xl flex flex-col h-[calc(100vh-120px)] p-4 space-y-6 bg-surface/60 backdrop-blur-3xl border border-white/5 shadow-2xl shadow-black/40 hidden lg:flex z-40">
+<!-- Header -->
+<div class="flex items-center gap-4 px-2">
+<img alt="Abstract neon glowing shapes resembling a futuristic musical community avatar, set against a deep black background." class="w-12 h-12 rounded-xl object-cover shadow-[0_0_15px_rgba(76,215,246,0.4)]" data-alt="Abstract neon glowing shapes in vibrant cyan and magenta, resembling a futuristic musical community avatar, set against a deep black background with soft rim lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4-R_8EC473f4uP3Ohs8fRoYalbHPoeQbf9-XKcnQqT4ZmnzxUTqxuxR45gNhNb4hjp7LaTcnMDVe7m-_TtqjRPrToVt3m2ITpoB1H_RwItZ_qPL37Lx5zwY3w3W5Mv6Y0ghGMqhrWGFb8oP2SeO07r72uYaESw1ixhYLfNQqb4ecimpVMms0-1hdVI_v9oHQMNeFEGNdzvnDAuCFjS2UgW6g3RpDKzzQ1o6vTDDahKsfwCJQ5veq2QI5e0DEUgfQnFfdNcyDmflo"/>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Neon Pulse</h2>
+<div class="flex items-center gap-1 text-secondary text-mono-label font-mono-label mt-1">
+<span class="w-2 h-2 bg-secondary rounded-full animate-pulse"></span>
+                    2.4k Listening
+                </div>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex-1 space-y-2 mt-8">
+<a class="flex items-center gap-4 py-3 text-on-surface-variant pl-4 hover:text-on-surface hover:bg-surface-container-high/50 transition-all rounded-r-full font-body-lg text-body-lg hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined">queue_music</span>
+                Queue
+            </a>
+<!-- Active State -->
+<a class="flex items-center gap-4 py-3 text-secondary font-bold border-l-4 border-secondary pl-4 bg-secondary/10 rounded-r-full font-body-lg text-body-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+                Now Playing
+            </a>
+<a class="flex items-center gap-4 py-3 text-on-surface-variant pl-4 hover:text-on-surface hover:bg-surface-container-high/50 transition-all rounded-r-full font-body-lg text-body-lg hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined">history</span>
+                History
+            </a>
+<a class="flex items-center gap-4 py-3 text-on-surface-variant pl-4 hover:text-on-surface hover:bg-surface-container-high/50 transition-all rounded-r-full font-body-lg text-body-lg hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined">push_pin</span>
+                Pinned
+            </a>
+</div>
+<button class="w-full py-3 rounded-full bg-surface-bright text-on-surface font-label-caps text-label-caps flex justify-center items-center gap-2 hover:bg-surface-container-highest transition-colors border border-white/5">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+            Create Playlist
+        </button>
+<!-- Footer -->
+<div class="pt-4 border-t border-white/5 space-y-1">
+<a class="flex items-center gap-3 py-2 text-on-surface-variant hover:text-on-surface transition-colors font-body-sm text-body-sm px-4" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">accessibility_new</span>
+                Accessibility
+            </a>
+<a class="flex items-center gap-3 py-2 text-on-surface-variant hover:text-on-surface transition-colors font-body-sm text-body-sm px-4" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">help_outline</span>
+                Help
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:ml-[312px] mt-24 mr-4 mb-4 h-[calc(100vh-112px)] flex flex-col lg:flex-row gap-lg relative z-10">
+<!-- Center Panel: Now Playing -->
+<section class="flex-1 flex flex-col h-full relative">
+<div class="glass-panel rounded-xl p-8 flex flex-col h-full relative overflow-hidden group">
+<!-- Background Blur of Album Art -->
+<div class="absolute inset-0 z-0 opacity-20 blur-3xl" data-alt="A highly distorted and blurred abstract image featuring sweeping waves of neon purple and bright cyan against a dark void, providing a subtle atmospheric glow to the player background." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAwXSQTZa2dWgmiR4Ef0Pg9QJIsUAKcXjBz00tk5xVr8Taasirh6NM5RC9Cvf3Xu3wN37q392eiUNX_41kTZSrYGPWzCWYXr92HnNoaIgnFex0Ak1OBDrxQPEQ3Jf-0Jde-s2PTpffPb0C7TVJFIjH9K1ej9ZtmWVPfuLTmHHyOYbd571RpheK7E6gZrJ_pqdWBFTZ6r-M1KqiE52SzIRFqNyA849IAqEQN8PNBJeGscOmvwxZwz2RfxMjGXIdW864FcDG0QA2nG7I'); background-size: cover; background-position: center;"></div>
+<div class="relative z-10 flex-1 flex flex-col items-center justify-center min-h-0">
+<!-- Album Artwork -->
+<div class="relative w-full max-w-[400px] aspect-square rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 group-hover:shadow-[0_20px_50px_rgba(210,187,255,0.2)] transition-shadow duration-500">
+<img alt="A high-fidelity rendering of a futuristic geometric object resembling a metallic sphere fracturing into shards, illuminated by intense violet and blue neon lights in a pitch-black environment." class="w-full h-full object-cover" data-alt="A high-fidelity rendering of a futuristic geometric object resembling a metallic sphere fracturing into shards, illuminated by intense violet and blue neon lights in a pitch-black environment, serving as premium electronic music album artwork." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWWs9ZPu8BqcCxexO9RP_C-KOvFR7IpXWfSgFrEdAKjz_KidL5VL9wis-U5SJvp9WDH-qRQKyeJb0rJWJ6r_lpkg6gIOtP3_blzOuCL37QltVw3z718q0MGt6ooXtJhRrOafR9fk7KJprGYdmHcOBbi4PDFwdAz-dRTzUEcB3ibxXYezyE_aQ2A0qJ0o5YQEUJix0tAXGrfUJBLxHI-9C2KkaO6aDaf0N1VWqKp2hMHhDeNyP_b2i-Kpo7mmR8fZvZ6pM3YlnVVKc"/>
+<!-- Floating Equalizer Overlay -->
+<div class="absolute bottom-6 left-6 flex items-end gap-1 h-8 bg-black/40 backdrop-blur-md px-3 py-2 rounded-lg border border-white/10">
+<div class="eq-bar h-full"></div>
+<div class="eq-bar h-full"></div>
+<div class="eq-bar h-full"></div>
+<div class="eq-bar h-full"></div>
+<div class="eq-bar h-full"></div>
+</div>
+</div>
+<!-- Song Info -->
+<div class="mt-8 text-center w-full max-w-md">
+<h1 class="font-display-lg text-display-lg text-on-surface truncate">Midnight Synthesis</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">Kavinsky • OutRun (10th Anniversary)</p>
+</div>
+<!-- Progress Bar -->
+<div class="w-full max-w-xl mt-8 flex items-center gap-4">
+<span class="font-mono-label text-mono-label text-on-surface-variant">2:14</span>
+<div class="flex-1 h-2 bg-surface-container-highest rounded-full overflow-hidden cursor-pointer relative group/progress">
+<div class="absolute top-0 left-0 h-full w-1/3 bg-gradient-to-r from-primary to-secondary rounded-full group-hover/progress:shadow-[0_0_10px_rgba(76,215,246,0.5)] transition-shadow"></div>
+</div>
+<span class="font-mono-label text-mono-label text-on-surface-variant">4:05</span>
+</div>
+<!-- Playback Controls -->
+<div class="mt-8 flex items-center justify-center gap-8">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">shuffle</span>
+</button>
+<button class="text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 40px; font-variation-settings: 'FILL' 1;">skip_previous</span>
+</button>
+<button class="w-20 h-20 bg-primary-fixed text-on-primary-fixed rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(210,187,255,0.4)] hover:scale-105 hover:bg-white transition-all">
+<span class="material-symbols-outlined" style="font-size: 48px; font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+<button class="text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 40px; font-variation-settings: 'FILL' 1;">skip_next</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">repeat</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Floating Party Chat -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[600px] glass-panel rounded-full p-2 flex items-center gap-4 z-20 transition-transform hover:-translate-y-1">
+<img alt="Avatar" class="w-10 h-10 rounded-full border border-white/10 ml-2" data-alt="A small circular avatar image showing a face, used for the chat input field identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMVRIL0NpqUCq-vleDT7eWp6axZikgpnS1wT217tkuI6dQ4sgByOvlE6zg9bEl2-zMhIr9dG0zIP1AMaxk_T9D3w8ajlhigZhB9fYohCTxlq9ZkpmOz7rUSIJUXtdeJwitVmDchyrNOcMQR7x8JvUPCt6kZaTaQ9zYVXiBOkjOvuBAP-zYewYo4w6NSXqdrW20N3sYsRWQBy1woQqxFjQGtR4YmkO8N5LnDKim6c-ANBa2U8A8iRg3V2pddDlbZ7NKwGgJ8JcUiGk"/>
+<input class="flex-1 bg-transparent border-none text-on-surface font-body-sm text-body-sm focus:ring-0 placeholder:text-on-surface-variant/50 outline-none" placeholder="Say something in Neon Pulse..." type="text"/>
+<button class="w-10 h-10 rounded-full bg-surface-bright flex items-center justify-center text-on-surface-variant hover:text-secondary hover:bg-surface-container-highest transition-colors mr-1">
+<span class="material-symbols-outlined" style="font-size: 20px;">sentiment_satisfied</span>
+</button>
+</div>
+</section>
+<!-- Right Panel: Live Reactions -->
+<section class="w-full lg:w-[350px] glass-panel rounded-xl flex flex-col h-full border-t-[3px] border-t-tertiary-container">
+<!-- Header -->
+<div class="p-6 border-b border-white/5 flex justify-between items-center bg-surface/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-container">local_fire_department</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Live Reactions</h3>
+</div>
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-surface-bright border border-surface flex items-center justify-center text-xs">+12</div>
+<img alt="User" class="w-8 h-8 rounded-full border border-surface z-10" data-alt="A small portrait of a smiling user in a low light setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyFjIy3h7nytjc-ONAIft5xqEBqmlZLBS_SkrGCFhIf9ADsTkRc8l3_g_aJe8e98qlK4lVeOzIzTDSujfRM2uJmSOLHn7ICPr0fffnIuJF_ABjdS0J6xU-xsWIgwPkLIYDv5-5422tguo-Sz5QOYWDIS7yUkFEeHo0xAUKdbvHLA9ySx9h795b4K1hca263gYFezDwQMgh4fJao4CV25lI1XT36k5oKhepwo2Fk2oJLzBq8NCPB7G4CGOMDH_4gUJSL9qDXcoBGzQ"/>
+<img alt="User" class="w-8 h-8 rounded-full border border-surface z-20" data-alt="A small portrait of a user looking directly at the camera." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDP6reCx61_xdFg19Midhb7purJvdo_XBS68Z3RD_ArKirY8d9_66Ix9hgBYBfiPFDT6IHjw3CrGXJwJ1GRh_mczd5zgfZhknJNR8RqDLTc6K4jR1bVRShlOumLg9uqGs1b39v7ohp5e2umKBv8fyNfb57pk4vDtuwOQX2HsC7EY5gf3uIgCSt_fOxK-nwUR9d7cXxxYNBf5UK2O834bwX3njERQlDpWss8KAYLc4lGxxJvCcOaQli4g57vJF5RLK9te0OhJtr1IMM"/>
+</div>
+</div>
+<!-- Feed Area -->
+<div class="flex-1 overflow-y-auto p-6 space-y-6 relative" id="reaction-feed">
+<!-- Sample Chat Items -->
+<div class="flex gap-3">
+<img alt="User" class="w-8 h-8 rounded-full mt-1" data-alt="Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGyZ9TfgVE3PKNkux2o363oJXtsBbqnlb9xueWM66KmO_hw9CaguHqtDMyQ7wx0ja9vh7fOQ-gCrlYKS1inxKcXjQEK-iMcZc5fC01r6nagx--T-mvA5ltM_TmL3jkhWz0QMDcsbe9Gtd98X3HCL4RVs_XzWAMXfdXkE7oA3Alp0Pc7pbQhjHEdxNVvo80UV3QGvzkupvMVviF174Ggm4zTUiOaKoyKXg3xRCisbPMH0vJvujLU-jfR_IgtpviBEhhdztn3q3yDhA"/>
+<div>
+<div class="flex items-baseline gap-2">
+<span class="font-label-caps text-label-caps text-secondary">Alex_Neo</span>
+<span class="font-mono-label text-[10px] text-on-surface-variant">2m ago</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface mt-1">This transition is insane 🔥</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container/20 flex items-center justify-center text-tertiary mt-1 font-label-caps">SJ</div>
+<div>
+<div class="flex items-baseline gap-2">
+<span class="font-label-caps text-label-caps text-tertiary">SarahJ</span>
+<span class="font-mono-label text-[10px] text-on-surface-variant">Just now</span>
+</div>
+<div class="bg-surface-container py-2 px-3 rounded-lg rounded-tl-none mt-1 inline-block border border-white/5">
+<p class="font-body-sm text-body-sm text-on-surface">Need this on vinyl ASAP</p>
+</div>
+</div>
+</div>
+<!-- Particle Container -->
+<div class="absolute bottom-20 right-10 w-[50px] h-[200px] pointer-events-none z-50" id="particle-container"></div>
+</div>
+<!-- Reaction Controls -->
+<div class="p-4 border-t border-white/5 bg-surface/40 backdrop-blur-md rounded-b-xl">
+<div class="flex justify-between items-center mb-4 px-2">
+<button class="text-2xl hover:scale-125 transition-transform duration-200" onclick="spawnEmoji('🔥')">🔥</button>
+<button class="text-2xl hover:scale-125 transition-transform duration-200" onclick="spawnEmoji('❤️')">❤️</button>
+<button class="text-2xl hover:scale-125 transition-transform duration-200" onclick="spawnEmoji('🎵')">🎵</button>
+<button class="text-2xl hover:scale-125 transition-transform duration-200" onclick="spawnEmoji('🚀')">🚀</button>
+<button class="text-2xl hover:scale-125 transition-transform duration-200" onclick="spawnEmoji('🤯')">🤯</button>
+</div>
+<button class="w-full py-2 bg-surface-container text-on-surface-variant border border-outline-variant border-dashed rounded-lg font-mono-label text-mono-label hover:text-primary hover:border-primary transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 16px;">upload_file</span>
+                    Custom Emoji Upload
+                </button>
+</div>
+</section>
+</main>
+<!-- Accessibility Settings Drawer -->
+<div class="fixed top-0 right-0 h-full w-[350px] bg-surface-container-high/95 backdrop-blur-3xl border-l border-white/10 shadow-[-20px_0_40px_rgba(0,0,0,0.5)] z-[60] translate-x-full transition-transform duration-300 ease-in-out flex flex-col" id="a11y-drawer">
+<div class="p-6 border-b border-white/10 flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined">accessibility_new</span>
+                Accessibility
+            </h2>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded-full hover:bg-white/5" onclick="toggleAccessibility()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6 space-y-8 overflow-y-auto flex-1">
+<!-- Appearance -->
+<div>
+<h3 class="font-label-caps text-label-caps text-primary mb-4">Appearance</h3>
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-3 text-on-surface">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">dark_mode</span>
+<span class="font-body-lg text-body-lg">Dark Mode</span>
+</div>
+<div class="relative">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-bright rounded-full peer peer-checked:bg-primary-container peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+</div>
+</label>
+</div>
+<!-- Motion -->
+<div>
+<h3 class="font-label-caps text-label-caps text-secondary mb-4">Motion &amp; Animation</h3>
+<label class="flex items-center justify-between cursor-pointer group mb-4">
+<div class="flex items-center gap-3 text-on-surface">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary transition-colors">animation</span>
+<span class="font-body-lg text-body-lg">Reduce Motion</span>
+</div>
+<div class="relative">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-bright rounded-full peer peer-checked:bg-secondary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+</div>
+</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-9">Disables equalizer animations, floating particles, and complex transitions.</p>
+</div>
+<!-- Typography -->
+<div>
+<h3 class="font-label-caps text-label-caps text-tertiary mb-4">Typography</h3>
+<div class="flex items-center gap-3 text-on-surface mb-3">
+<span class="material-symbols-outlined text-on-surface-variant">text_fields</span>
+<span class="font-body-lg text-body-lg">Font Scaling</span>
+</div>
+<input class="w-full h-1 bg-surface-bright rounded-lg appearance-none cursor-pointer accent-tertiary" max="150" min="80" type="range" value="100"/>
+<div class="flex justify-between text-mono-label text-on-surface-variant mt-2">
+<span>A</span>
+<span class="text-lg">A</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Scripts -->
+<script>
+        // Drawer Toggle
+        function toggleAccessibility() {
+            const drawer = document.getElementById('a11y-drawer');
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+            } else {
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        // Floating Emoji Spawner
+        function spawnEmoji(emojiChar) {
+            const container = document.getElementById('particle-container');
+            if (!container) return;
+
+            const particle = document.createElement('div');
+            particle.className = 'emoji-particle';
+            particle.innerText = emojiChar;
+            
+            // Randomize horizontal starting position slightly
+            const randomX = Math.floor(Math.random() * 40) - 20;
+            particle.style.left = `${randomX}px`;
+            
+            container.appendChild(particle);
+
+            // Clean up after animation
+            setTimeout(() => {
+                particle.remove();
+            }, 3000);
+        }
+    </script>
+</body></html>

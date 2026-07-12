@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SyncWave - Listen Together. Anywhere.</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#eaddff",
+                        "inverse-surface": "#e5e1e4",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "on-background": "#e5e1e4",
+                        "on-secondary": "#003640",
+                        "on-secondary-fixed": "#001f26",
+                        "tertiary-container": "#ae397b",
+                        "primary": "#d2bbff",
+                        "secondary": "#4cd7f6",
+                        "surface-container-low": "#1c1b1d",
+                        "on-primary": "#3f008e",
+                        "on-tertiary-fixed-variant": "#85145a",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "error": "#ffb4ab",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-highest": "#353437",
+                        "primary-container": "#7c3aed",
+                        "on-tertiary": "#620040",
+                        "outline-variant": "#4a4455",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "error-container": "#93000a",
+                        "surface-tint": "#d2bbff",
+                        "surface": "#131315",
+                        "on-secondary-container": "#00424e",
+                        "on-primary-container": "#ede0ff",
+                        "tertiary": "#ffafd3",
+                        "surface-container": "#201f22",
+                        "tertiary-fixed": "#ffd8e7",
+                        "surface-variant": "#353437",
+                        "surface-container-lowest": "#0e0e10",
+                        "surface-bright": "#39393b",
+                        "on-error": "#690005",
+                        "inverse-on-surface": "#313032",
+                        "on-surface": "#e5e1e4",
+                        "surface-dim": "#131315",
+                        "on-surface-variant": "#ccc3d8",
+                        "primary-fixed-dim": "#d2bbff",
+                        "outline": "#958da1",
+                        "on-primary-fixed": "#25005a",
+                        "secondary-fixed": "#acedff",
+                        "tertiary-fixed-dim": "#ffafd3",
+                        "secondary-container": "#03b5d3",
+                        "on-tertiary-fixed": "#3d0026",
+                        "on-tertiary-container": "#ffdce9",
+                        "surface-container-high": "#2a2a2c",
+                        "background": "#131315",
+                        "inverse-primary": "#732ee4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "40px",
+                        "unit": "4px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "margin-desktop": "32px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "gutter": "20px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter", "sans-serif"],
+                        "mono-label": ["Geist", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "headline-lg-mobile": ["Inter", "sans-serif"],
+                        "display-lg": ["Inter", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "label-caps": ["Geist", "monospace"],
+                        "headline-md": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "mono-label": ["13px", { "lineHeight": "1", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Floating particles base styles */
+        .emoji-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            animation: floatUp 8s ease-in infinite;
+            filter: drop-shadow(0 0 10px rgba(210,187,255,0.5));
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-20vh) scale(1.5) rotate(360deg); opacity: 0; }
+        }
+
+        /* Glassmorphism utility for bento cards */
+        .bento-card {
+            background: rgba(19, 19, 21, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .bento-card:hover {
+            border-color: rgba(210,187,255, 0.3);
+            box-shadow: 0 8px 32px -1px rgba(0, 0, 0, 0.4), 0 0 20px rgba(210,187,255,0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Floating Container Style (Arc-inspired) */
+        .floating-canvas {
+            margin: 16px;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+        @media (min-width: 768px) {
+            .floating-canvas {
+                margin: 24px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-lg overflow-x-hidden">
+<!-- Ambient WebGL Background Shader -->
+<!-- STITCH_THREEJS_START:ANIMATION_2 class="fixed inset-0 w-full h-full z-0 pointer-events-none opacity-60" -->
+<div class="fixed inset-0 w-full h-full z-0 pointer-events-none opacity-60" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_2" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_2');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  const container = document.getElementById('visualizer-container') || document.body;
+const width = container.clientWidth || window.innerWidth;
+const height = container.clientHeight || window.innerHeight;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+renderer.setSize(width, height);
+container.appendChild(renderer.domElement);
+
+// Create a group of bars for the visualizer
+const group = new THREE.Group();
+const barCount = 64;
+const bars = [];
+const geometry = new THREE.BoxGeometry(0.1, 1, 0.1);
+
+for (let i = 0; i < barCount; i++) {
+    const material = new THREE.MeshPhongMaterial({ 
+        color: i % 2 === 0 ? 0x7C3AED : 0x06B6D4,
+        emissive: i % 2 === 0 ? 0x7C3AED : 0x06B6D4,
+        emissiveIntensity: 0.5,
+        transparent: true,
+        opacity: 0.8
+    });
+    const bar = new THREE.Mesh(geometry, material);
+    bar.position.x = (i - barCount / 2) * 0.15;
+    group.add(bar);
+    bars.push(bar);
+}
+scene.add(group);
+
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(0, 5, 5).normalize();
+scene.add(light);
+scene.add(new THREE.AmbientLight(0x404040));
+
+camera.position.z = 5;
+
+function animate() {
+    requestAnimationFrame(animate);
+    const time = Date.now() * 0.001;
+    
+    bars.forEach((bar, i) => {
+        const scale = 1 + Math.sin(time * 3 + i * 0.2) * 2 + Math.cos(time * 2 + i * 0.5) * 1;
+        bar.scale.y = Math.max(0.1, scale);
+        bar.position.y = bar.scale.y / 2;
+        bar.material.opacity = 0.5 + Math.sin(time + i * 0.1) * 0.3;
+    });
+    
+    group.rotation.y = Math.sin(time * 0.2) * 0.5;
+    
+    renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', () => {
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+});
+
+animate();
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_2 -->
+<!-- Floating Emoji Particles Container -->
+<div class="fixed inset-0 z-0 pointer-events-none overflow-hidden" id="particle-container"></div>
+<!-- TopNavBar (Shared Component) - Desktop Only -->
+<nav class="hidden md:flex fixed top-4 left-4 right-4 z-50 justify-between items-center px-6 py-3 bg-surface/60 backdrop-blur-xl border-b border-white/10 shadow-[0_0_20px_rgba(210,187,255,0.3)] rounded-b-xl rounded-t-xl" style="width: calc(100% - 32px);">
+<!-- Brand -->
+<div class="font-display-lg text-display-lg bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary scale-95 duration-200">SyncWave</div>
+<!-- Navigation Links -->
+<div class="flex items-center gap-6">
+<!-- Active State -->
+<a class="font-headline-md text-headline-md text-primary border-b-2 border-primary pb-1 scale-95 duration-200" href="#">Discover</a>
+<!-- Inactive States -->
+<a class="font-headline-md text-headline-md text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors scale-95 duration-200 px-2 py-1 rounded-md" href="#">Rooms</a>
+<a class="font-headline-md text-headline-md text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors scale-95 duration-200 px-2 py-1 rounded-md" href="#">Trending</a>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="font-headline-md text-headline-md text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors scale-95 duration-200 px-3 py-1 rounded-md">Theme Toggle</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors p-2 rounded-full scale-95 duration-200" data-icon="settings">settings</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors p-2 rounded-full scale-95 duration-200" data-icon="notifications">notifications</button>
+<button class="font-headline-md text-headline-md text-on-primary bg-primary hover:bg-primary-fixed transition-colors scale-95 duration-200 px-4 py-2 rounded-lg shadow-lg shadow-primary/20">Join Room</button>
+<img alt="User profile" class="w-10 h-10 rounded-full border-2 border-surface-variant object-cover" data-alt="A close-up, high-fashion portrait of a young woman bathed in soft, cool neon lighting. The background is a blurred, dark void hinting at a futuristic digital space. Her expression is calm and confident, perfectly encapsulating the premium, precision aesthetic of the platform. The lighting highlights the subtle textures of her features against the deep black backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVbCsBMLjfiHhhqnYXNgEacYgRRNieurdBfeUjjV9CuX7xS99TOTeupaqZ9K0cDxasH0zHSdwU4bnMWlhiIiL0-m0zLdiPynHUXcfY_tKl84k-UWvBCBiHjogLKmCVXuZV-F6Hhq0NZmcTmip44ARkioxk1kG0LF5Ot2SK3nOdaxaQA-q7UzlNTMfssKzOeTpCGSjmSqv5wfvU_Pp7Q-5kQcO2TdpsJJJ-jO6KA2gjJpmf_g4XGwUZ5JLE5Ym1_CduqqZH2zz01jU"/>
+</div>
+</nav>
+<!-- BottomNavBar (Shared Component) - Mobile Only -->
+<nav class="flex md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] min-w-[320px] rounded-full justify-center items-center p-2 z-50 bg-surface-container/80 backdrop-blur-2xl border border-white/10 shadow-[0_-8px_32px_rgba(0,0,0,0.5)]">
+<div class="flex w-full justify-around items-center">
+<!-- Active state context doesn't strictly match landing page for these labels, but we will highlight Chat as a default 'primary' action if forced, though standard is highlight none or first. Let's make none active to focus on the hero canvas, or highlight 'Chat' as it's the core feature. Let's highlight Chat. -->
+<button class="bg-primary text-on-primary rounded-full px-4 py-2 flex flex-col sm:flex-row items-center gap-1 sm:gap-2 active:scale-90 duration-150">
+<span class="material-symbols-outlined text-xl" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-label-caps text-label-caps hidden sm:block">Chat</span>
+</button>
+<button class="text-on-surface-variant px-4 py-2 flex flex-col sm:flex-row items-center gap-1 sm:gap-2 hover:text-primary transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined text-xl" data-icon="group">group</span>
+<span class="font-label-caps text-label-caps hidden sm:block">Participants</span>
+</button>
+<button class="text-on-surface-variant px-4 py-2 flex flex-col sm:flex-row items-center gap-1 sm:gap-2 hover:text-primary transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined text-xl" data-icon="tune">tune</span>
+<span class="font-label-caps text-label-caps hidden sm:block">Controls</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="relative z-10 pt-24 pb-32 md:pt-32 md:pb-24 max-w-[1440px] mx-auto px-4 md:px-6 flex flex-col gap-6">
+<!-- Hero Section (Bento Grid Hero) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[614px]">
+<!-- Hero Text Card -->
+<div class="bento-card col-span-1 lg:col-span-5 flex flex-col justify-center p-8 md:p-12 relative overflow-hidden group">
+<!-- Subtle background glow -->
+<div class="absolute -top-32 -left-32 w-64 h-64 bg-primary/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-primary/30 transition-colors duration-700"></div>
+<div class="relative z-10 space-y-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container/50 border border-white/10 font-mono-label text-mono-label text-secondary mb-4 backdrop-blur-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                        V 2.0 Live Now
+                    </div>
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight leading-tight">
+                        Listen Together.<br/>
+<span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-tertiary">Anywhere.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">
+                        Create private listening rooms and enjoy synchronized music with friends. Experience high-fidelity audio combined with deep-space digital precision.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4 pt-4">
+<button class="relative px-8 py-4 rounded-xl font-headline-md text-headline-md text-on-primary bg-gradient-to-b from-primary to-[#b28cff] border border-white/20 shadow-[0_0_20px_rgba(210,187,255,0.3)] hover:shadow-[0_0_30px_rgba(210,187,255,0.5)] hover:-translate-y-1 transition-all duration-300 overflow-hidden group/btn">
+<div class="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out"></div>
+<span class="relative z-10">Create Room</span>
+</button>
+<button class="px-8 py-4 rounded-xl font-headline-md text-headline-md text-on-surface bg-surface-container/40 backdrop-blur-md border border-white/10 hover:bg-surface-container-high/60 hover:border-white/20 transition-all duration-300 shadow-inner flex items-center justify-center gap-2">
+<span>Join Room</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 3D Visualizer Canvas -->
+<div class="bento-card col-span-1 lg:col-span-7 relative min-h-[400px] overflow-hidden group rounded-[32px]">
+<div class="absolute inset-0 z-10 pointer-events-none rounded-[32px] border border-white/5 group-hover:border-primary/20 transition-colors duration-500"></div>
+<!-- Loading state skeleton before Three.js kicks in -->
+<div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest/50 backdrop-blur-sm z-0">
+<span class="material-symbols-outlined animate-spin text-primary opacity-50" style="font-size: 48px;">graphic_eq</span>
+</div>
+<!-- The 3D Scene -->
+<!-- STITCH_SHADER_START:ANIMATION_3 class="absolute inset-0 w-full h-full z-10" -->
+<div class="absolute inset-0 w-full h-full z-10" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_3" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_3');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+varying vec2 v_texCoord;
+
+float noise(vec2 p) {
+    return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 center = uv - 0.5;
+    center.x *= u_resolution.x / u_resolution.y;
+    
+    // Animated gradient blobs
+    float d1 = length(center + vec2(sin(u_time * 0.5) * 0.3, cos(u_time * 0.3) * 0.3));
+    float d2 = length(center + vec2(cos(u_time * 0.4) * 0.4, sin(u_time * 0.6) * 0.2));
+    
+    vec3 color1 = vec3(0.486, 0.227, 0.929); // #7C3AED
+    vec3 color2 = vec3(0.024, 0.714, 0.831); // #06B6D4
+    vec3 bg = vec3(0.035, 0.035, 0.043);    // #09090B
+    
+    vec3 finalColor = mix(bg, color1, smoothstep(0.6, 0.2, d1) * 0.4);
+    finalColor = mix(finalColor, color2, smoothstep(0.5, 0.1, d2) * 0.3);
+    
+    // Subtle audio wave scanline effect
+    float scanline = sin(uv.y * 100.0 + u_time * 2.0) * 0.02;
+    finalColor += scanline * color2;
+    
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_3 -->
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-8">
+<!-- Feature 1 -->
+<div class="bento-card p-6 flex flex-col gap-4 relative overflow-hidden group">
+<div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300">
+<span class="material-symbols-outlined">sync</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Real-time Sync</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex-grow">Experience perfect millisecond-precision synchronized listening across all devices globally.</p>
+<!-- Subtle decorative element -->
+<div class="absolute -bottom-8 -right-8 w-24 h-24 bg-primary/10 rounded-full blur-xl"></div>
+</div>
+<!-- Feature 2 -->
+<div class="bento-card p-6 flex flex-col gap-4 relative overflow-hidden group">
+<div class="w-12 h-12 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary group-hover:scale-110 group-hover:bg-secondary/20 transition-all duration-300">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Private Rooms</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex-grow">Secure, invite-only spaces designed for intimate listening sessions with your inner circle.</p>
+<div class="absolute -bottom-8 -right-8 w-24 h-24 bg-secondary/10 rounded-full blur-xl"></div>
+</div>
+<!-- Feature 3 -->
+<div class="bento-card p-6 flex flex-col gap-4 relative overflow-hidden group lg:col-span-2 bg-gradient-to-br from-surface-container/60 to-surface-container-low/40">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-xl bg-tertiary/10 border border-tertiary/20 flex items-center justify-center text-tertiary group-hover:rotate-12 transition-all duration-300">
+<span class="material-symbols-outlined">headphones</span>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 rounded-full bg-[#1DB954]/10 text-[#1DB954] border border-[#1DB954]/20 font-mono-label text-mono-label">Spotify</span>
+<span class="px-3 py-1 rounded-full bg-[#FF0000]/10 text-[#FF0000] border border-[#FF0000]/20 font-mono-label text-mono-label">YouTube</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-2">Universal Platform Support</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant w-2/3">Seamlessly integrate your favorite playlists from Spotify and YouTube into one unified listening experience.</p>
+<!-- Abstract UI decoration -->
+<div class="absolute right-6 top-1/2 -translate-y-1/2 flex items-end gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
+<div class="w-2 h-8 bg-tertiary/40 rounded-full animate-pulse" style="animation-delay: 0.1s"></div>
+<div class="w-2 h-12 bg-tertiary/60 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+<div class="w-2 h-6 bg-tertiary/40 rounded-full animate-pulse" style="animation-delay: 0.3s"></div>
+<div class="w-2 h-16 bg-tertiary rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+</div>
+</div>
+<!-- Feature 4 -->
+<div class="bento-card p-6 flex flex-col gap-4 relative overflow-hidden group lg:col-span-4 min-h-[200px] flex-row items-center justify-between border-t border-white/10 mt-4">
+<div class="w-full md:w-1/2 z-10">
+<h3 class="font-headline-lg md:font-headline-lg font-headline-lg-mobile text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Custom Emoji Reactions</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Express yourself in real-time. Drop particles into the room and watch the space react to the vibe of the music.</p>
+</div>
+<!-- Decorative reaction cluster -->
+<div class="relative w-full md:w-1/2 h-32 flex justify-center items-center pointer-events-none">
+<div class="absolute text-4xl animate-bounce" style="animation-delay: 0s; left: 20%; top: 20%; filter: drop-shadow(0 0 10px rgba(255,100,100,0.5));">🔥</div>
+<div class="absolute text-5xl animate-bounce" style="animation-delay: 0.2s; left: 50%; top: 40%; filter: drop-shadow(0 0 15px rgba(255,50,50,0.6));">❤️</div>
+<div class="absolute text-3xl animate-bounce" style="animation-delay: 0.4s; left: 80%; top: 10%; filter: drop-shadow(0 0 10px rgba(100,200,255,0.5));">🎵</div>
+<div class="absolute text-2xl animate-bounce" style="animation-delay: 0.1s; left: 30%; top: 60%; filter: drop-shadow(0 0 8px rgba(255,255,100,0.5));">✨</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Inline script for dynamic floating particles -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('particle-container');
+            const emojis = ['🔥', '❤️', '🎵', '✨', '🎧', '🚀'];
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.classList.add('emoji-particle');
+                
+                // Randomize emoji
+                particle.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                // Randomize horizontal position
+                particle.style.left = Math.random() * 100 + 'vw';
+                
+                // Randomize size slightly
+                const size = 1 + Math.random() * 1.5;
+                particle.style.fontSize = size + 'rem';
+                
+                // Randomize animation duration between 6s and 12s
+                const duration = 6 + Math.random() * 6;
+                particle.style.animationDuration = duration + 's';
+                
+                // Randomize animation delay
+                particle.style.animationDelay = Math.random() * 5 + 's';
+
+                container.appendChild(particle);
+
+                // Remove particle after it finishes animating to prevent DOM bloat
+                setTimeout(() => {
+                    particle.remove();
+                }, duration * 1000);
+            }
+
+            // Create an initial burst
+            for(let i=0; i<15; i++) {
+                setTimeout(createParticle, Math.random() * 3000);
+            }
+
+            // Continuously create particles
+            setInterval(createParticle, 1200);
+        });
+    </script>
+</body></html>
