@@ -44,7 +44,7 @@ export default function Home() {
           Create a private room, invite your friends, paste a music link, and enjoy synchronized playback in real-time. Minimal, elegant, and completely in sync.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md mx-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mx-auto">
           {isJoining ? (
             <form onSubmit={handleJoinRoom} className="w-full flex gap-2">
               <input

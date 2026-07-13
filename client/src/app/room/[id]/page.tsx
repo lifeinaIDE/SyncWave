@@ -134,7 +134,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         </main>
 
         {/* Mobile Layout (Hidden on desktop) */}
-        <div className="block lg:hidden flex-1 h-[calc(100vh-72px)] overflow-hidden relative">
+        <div className="flex lg:hidden flex-col flex-1 h-[calc(100vh-72px)] w-full overflow-hidden relative">
           <MobileRoomLayout room={room} socket={socket} />
         </div>
       </PlaybackProvider>
