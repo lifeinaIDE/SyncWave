@@ -20,7 +20,7 @@ function JoinScreen({
     if (ytPlayer && ytPlayer.playVideo && ytPlayer.pauseVideo) {
       try {
         ytPlayer.playVideo();
-        setTimeout(() => ytPlayer.pauseVideo(), 150);
+        ytPlayer.pauseVideo();
       } catch (err) {}
     }
 

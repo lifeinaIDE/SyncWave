@@ -25,6 +25,7 @@ interface PlaybackContextType {
   handleSeek: (fraction: number) => void;
   handleNext: () => void;
   handlePrev: () => void;
+  ytPlayer: any;
 }
 
 const PlaybackContext = createContext<PlaybackContextType | null>(null);
@@ -411,6 +412,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     handleSeek,
     handleNext,
     handlePrev,
+    ytPlayer,
   };
 
   return (
