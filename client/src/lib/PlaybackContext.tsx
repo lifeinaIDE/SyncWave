@@ -272,7 +272,41 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
         }
       }
     }
-  }, [playback, isHost, isReady, deviceId, playSpotifyTrack, spotifyPlayer, ytPlayer]); 
+
+    // UPDATE MEDIA SESSION API FOR BACKGROUND PLAYBACK
+    if ('mediaSession' in navigator && playback?.metadata) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: playback.metadata.title || 'SyncWave',
+        artist: playback.metadata.artist || 'SyncWave Audio',
+        artwork: playback.metadata.thumbnail ? [
+          { src: playback.metadata.thumbnail, sizes: '512x512', type: 'image/jpeg' }
+        ] : []
+      });
+
+      navigator.mediaSession.setActionHandler('play', () => {
+        setActualPlaying(true);
+        if (playback.type === 'youtube') ytPlayer?.playVideo?.();
+        else if (playback.type === 'spotify') spotifyPlayer?.resume().catch(() => {});
+        socket?.emit('playback-sync', { isPlaying: true, played: currentPlayedFractionRef.current });
+      });
+
+      navigator.mediaSession.setActionHandler('pause', () => {
+        setActualPlaying(false);
+        if (playback.type === 'youtube') ytPlayer?.pauseVideo?.();
+        else if (playback.type === 'spotify') spotifyPlayer?.pause().catch(() => {});
+        socket?.emit('playback-sync', { isPlaying: false, played: currentPlayedFractionRef.current });
+      });
+
+      if (isHost) {
+        navigator.mediaSession.setActionHandler('nexttrack', () => socket?.emit('play-next'));
+        navigator.mediaSession.setActionHandler('previoustrack', () => socket?.emit('play-prev'));
+      } else {
+        navigator.mediaSession.setActionHandler('nexttrack', null);
+        navigator.mediaSession.setActionHandler('previoustrack', null);
+      }
+    }
+
+  }, [playback, isHost, isReady, deviceId, playSpotifyTrack, spotifyPlayer, ytPlayer, socket]); 
 
   // POLLING LOOP
   useEffect(() => {

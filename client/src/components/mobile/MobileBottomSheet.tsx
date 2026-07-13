@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { motion, useAnimation, PanInfo } from 'framer-motion';
 import { usePlayback } from '@/lib/PlaybackContext';
 
+import { detectPlatform, fetchYouTubeMetadata, fetchSpotifyMetadata } from '@/lib/urlUtils';
+
 type SheetState = 'COLLAPSED' | 'HALF' | 'FULL';
 
 export default function MobileBottomSheet({ room, socket, sheetState, setSheetState }: { room: any; socket: any, sheetState: SheetState, setSheetState: (s: SheetState) => void }) {
@@ -13,15 +15,36 @@ export default function MobileBottomSheet({ room, socket, sheetState, setSheetSt
 
   const controls = useAnimation();
 
-  const handleAddSong = (e: React.FormEvent) => {
+  const handleAddSong = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim() || !socket) return;
+    const rawUrl = url.trim();
+    if (!rawUrl || !socket) return;
+    
     setIsAdding(true);
-    socket.emit('add-song', url.trim(), (response: any) => {
-      setIsAdding(false);
-      if (response.success) setUrl('');
-      else alert(response.error);
-    });
+    const type = detectPlatform(rawUrl);
+    let metadata = null;
+
+    if (type === 'youtube') {
+      metadata = await fetchYouTubeMetadata(rawUrl);
+    } else if (type === 'spotify') {
+      const tokenMatch = document.cookie.match(/(?:^|;\s*)spotify_access_token=([^;]*)/);
+      if (tokenMatch) {
+        metadata = await fetchSpotifyMetadata(rawUrl, tokenMatch[1]);
+      } else {
+        alert("You must be logged into Spotify to add Spotify tracks.");
+        setIsAdding(false);
+        return;
+      }
+    }
+
+    if (type) {
+      socket.emit('add-song', { url: rawUrl, type, metadata });
+      setUrl('');
+    } else {
+      alert("Unsupported URL. Please use YouTube or Spotify.");
+    }
+    
+    setIsAdding(false);
   };
 
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
