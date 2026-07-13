@@ -16,11 +16,21 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const [socket, setSocket] = useState<any>(null);
   const [userName, setUserName] = useState('');
   const [joined, setJoined] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const s = getSocket();
     setSocket(s);
+
+    const onConnect = () => setIsConnected(true);
+    const onDisconnect = () => setIsConnected(false);
+
+    if (s.connected) setIsConnected(true);
+
+    s.on('connect', onConnect);
+    s.on('disconnect', onDisconnect);
 
     s.on('room-state', (state) => {
       setRoom(state);
@@ -31,6 +41,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     });
 
     return () => {
+      s.off('connect', onConnect);
+      s.off('disconnect', onDisconnect);
       s.off('room-state');
       s.off('playback-update');
     };
@@ -38,9 +50,11 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
 
   const handleJoin = (e?: React.FormEvent | React.MouseEvent) => {
     if (e) e.preventDefault();
-    if (!userName.trim() || !socket) return;
+    if (!userName.trim() || !socket || !isConnected) return;
     
+    setIsJoining(true);
     socket.emit('join-room', { roomId, name: userName.trim() }, (response: any) => {
+      setIsJoining(false);
       if (response.success) {
         setRoom(response.room);
         setJoined(true);
@@ -76,10 +90,16 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             <button 
               type="submit"
               onClick={handleJoin}
-              disabled={!userName.trim()}
-              className="w-full py-3 bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 rounded-lg font-bold transition-colors shadow-sm"
+              disabled={!userName.trim() || !isConnected || isJoining}
+              className="w-full py-3 bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 rounded-lg font-bold transition-colors shadow-sm flex items-center justify-center gap-2"
             >
-              Join Session
+              {isJoining ? (
+                <><span className="material-symbols-outlined animate-spin text-[20px]">sync</span> Joining...</>
+              ) : !isConnected ? (
+                <><span className="material-symbols-outlined animate-spin text-[20px]">sync</span> Waking Server...</>
+              ) : (
+                'Join Session'
+              )}
             </button>
           </form>
           <button onClick={() => router.push('/')} className="text-sm text-[var(--color-on-surface-variant)] hover:text-white mt-2 transition-colors">
@@ -93,7 +113,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const isHost = room?.host === socket?.id;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--color-background)] overflow-hidden">
+    <div className="h-[100dvh] flex flex-col bg-[var(--color-background)] overflow-hidden">
       {/* Top Navbar */}
       <header className="h-[72px] border-b border-[var(--color-outline)] bg-[var(--color-surface)] flex items-center justify-between px-6 shrink-0">
         <div className="flex items-center gap-3">
@@ -134,7 +154,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         </main>
 
         {/* Mobile Layout (Hidden on desktop) */}
-        <div className="flex lg:hidden flex-col flex-1 h-[calc(100vh-72px)] w-full overflow-hidden relative">
+        <div className="flex lg:hidden flex-col h-[calc(100dvh-72px)] w-full overflow-hidden relative">
           <MobileRoomLayout room={room} socket={socket} />
         </div>
       </PlaybackProvider>
