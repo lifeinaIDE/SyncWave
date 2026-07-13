@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);
+    const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
     if (!res.ok) {
       return NextResponse.json({ error: 'Failed to fetch metadata from YouTube' }, { status: res.status });
     }

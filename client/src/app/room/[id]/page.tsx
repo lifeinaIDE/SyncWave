@@ -5,8 +5,66 @@ import LeftPanel from '@/components/LeftPanel';
 import CenterPanel from '@/components/CenterPanel';
 import RightPanel from '@/components/RightPanel';
 import { useRouter } from 'next/navigation';
-import { PlaybackProvider } from '@/lib/PlaybackContext';
+import { usePlayback, PlaybackProvider } from '@/lib/PlaybackContext';
 import MobileRoomLayout from '@/components/mobile/MobileRoomLayout';
+
+function JoinScreen({ 
+  roomId, userName, setUserName, isConnected, isJoining, onJoin, onCancel
+}: any) {
+  const { ytPlayer } = usePlayback();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Autoplay unlock hack: play and immediately pause on user interaction
+    if (ytPlayer && ytPlayer.playVideo && ytPlayer.pauseVideo) {
+      try {
+        ytPlayer.playVideo();
+        setTimeout(() => ytPlayer.pauseVideo(), 150);
+      } catch (err) {}
+    }
+
+    onJoin(e);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[var(--color-background)]">
+      <div className="w-full max-w-md card p-8 flex flex-col gap-6 text-center">
+        <div className="w-12 h-12 rounded bg-[var(--color-primary)] flex items-center justify-center mx-auto mb-2">
+          <span className="material-symbols-outlined text-white text-2xl">music_note</span>
+        </div>
+        <h2 className="text-2xl font-bold text-white tracking-tight">Join Room</h2>
+        <p className="text-[var(--color-on-surface-variant)] text-sm mb-2">Room ID: <span className="font-mono text-white">{roomId}</span></p>
+        
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input 
+            type="text"
+            placeholder="Enter your display name"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            className="w-full px-4 py-3 bg-[var(--color-background)] border border-[var(--color-outline)] rounded-lg text-white focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+          />
+          <button 
+            type="submit"
+            disabled={!userName.trim() || !isConnected || isJoining}
+            className="w-full py-3 bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 rounded-lg font-bold transition-colors shadow-sm flex items-center justify-center gap-2"
+          >
+            {isJoining ? (
+              <><span className="material-symbols-outlined animate-spin text-[20px]">sync</span> Joining...</>
+            ) : !isConnected ? (
+              <><span className="material-symbols-outlined animate-spin text-[20px]">sync</span> Waking Server...</>
+            ) : (
+              'Join Session'
+            )}
+          </button>
+        </form>
+        <button type="button" onClick={onCancel} className="text-sm text-[var(--color-on-surface-variant)] hover:text-white mt-2 transition-colors">
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function RoomPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -69,53 +127,24 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     router.push('/');
   };
 
-  if (!joined) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[var(--color-background)]">
-        <div className="w-full max-w-md card p-8 flex flex-col gap-6 text-center">
-          <div className="w-12 h-12 rounded bg-[var(--color-primary)] flex items-center justify-center mx-auto mb-2">
-            <span className="material-symbols-outlined text-white text-2xl">music_note</span>
-          </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Join Room</h2>
-          <p className="text-[var(--color-on-surface-variant)] text-sm mb-2">Room ID: <span className="font-mono text-white">{roomId}</span></p>
-          
-          <form onSubmit={handleJoin} className="flex flex-col gap-4">
-            <input 
-              type="text"
-              placeholder="Enter your display name"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="w-full px-4 py-3 bg-[var(--color-background)] border border-[var(--color-outline)] rounded-lg text-white focus:outline-none focus:border-[var(--color-primary)] transition-colors"
-            />
-            <button 
-              type="submit"
-              onClick={handleJoin}
-              disabled={!userName.trim() || !isConnected || isJoining}
-              className="w-full py-3 bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 rounded-lg font-bold transition-colors shadow-sm flex items-center justify-center gap-2"
-            >
-              {isJoining ? (
-                <><span className="material-symbols-outlined animate-spin text-[20px]">sync</span> Joining...</>
-              ) : !isConnected ? (
-                <><span className="material-symbols-outlined animate-spin text-[20px]">sync</span> Waking Server...</>
-              ) : (
-                'Join Session'
-              )}
-            </button>
-          </form>
-          <button onClick={() => router.push('/')} className="text-sm text-[var(--color-on-surface-variant)] hover:text-white mt-2 transition-colors">
-            Cancel
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   const isHost = room?.host === socket?.id;
 
   return (
-    <div className="h-[100dvh] flex flex-col bg-[var(--color-background)] overflow-hidden">
-      {/* Top Navbar */}
-      <header className="h-[72px] border-b border-[var(--color-outline)] bg-[var(--color-surface)] flex items-center justify-between px-6 shrink-0">
+    <PlaybackProvider room={room || {}} socket={socket}>
+      {!joined ? (
+        <JoinScreen 
+          roomId={roomId} 
+          userName={userName} 
+          setUserName={setUserName} 
+          isConnected={isConnected} 
+          isJoining={isJoining} 
+          onJoin={handleJoin} 
+          onCancel={() => router.push('/')} 
+        />
+      ) : (
+        <div className="h-[100dvh] flex flex-col bg-[var(--color-background)] overflow-hidden">
+          {/* Top Navbar */}
+          <header className="h-[72px] border-b border-[var(--color-outline)] bg-[var(--color-surface)] flex items-center justify-between px-6 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded bg-[var(--color-primary)] flex items-center justify-center cursor-pointer" onClick={() => router.push('/')}>
             <span className="material-symbols-outlined text-white text-xl">music_note</span>
@@ -128,13 +157,13 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
           </span>
         </div>
         
-        <button onClick={handleLeave} className="text-sm font-medium text-[var(--color-on-surface-variant)] hover:text-white transition-colors flex items-center gap-2">
-          <span className="material-symbols-outlined text-[18px]">logout</span>
-          Leave Room
-        </button>
-      </header>
-      
-      <PlaybackProvider room={room} socket={socket}>
+          
+          <button onClick={handleLeave} className="text-sm font-medium text-[var(--color-on-surface-variant)] hover:text-white transition-colors flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]">logout</span>
+            Leave Room
+          </button>
+        </header>
+        
         {/* Desktop Layout (Hidden on mobile) */}
         <main className="hidden lg:grid flex-1 w-full max-w-[1600px] mx-auto p-6 grid-cols-12 gap-6 h-[calc(100vh-72px)] overflow-hidden">
           {/* Left Panel: 3/12 */}
@@ -157,7 +186,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         <div className="flex lg:hidden flex-col h-[calc(100dvh-72px)] w-full overflow-hidden relative">
           <MobileRoomLayout room={room} socket={socket} />
         </div>
-      </PlaybackProvider>
-    </div>
+      </div>
+      )}
+    </PlaybackProvider>
   );
 }
