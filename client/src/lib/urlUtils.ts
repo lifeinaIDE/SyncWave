@@ -20,14 +20,13 @@ export function extractSpotifyTrackId(url: string): string | null {
 
 export async function fetchYouTubeMetadata(url: string): Promise<SongMetadata | null> {
   try {
-    // using youtube oembed endpoint
-    const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);
+    const res = await fetch(`/api/youtube?url=${encodeURIComponent(url)}`);
     if (!res.ok) return null;
     const data = await res.json();
     return {
       title: data.title || 'Unknown Title',
-      artist: data.author_name || 'Unknown Artist',
-      thumbnail: data.thumbnail_url || ''
+      artist: data.artist || 'Unknown Artist',
+      thumbnail: data.thumbnail || ''
     };
   } catch (error) {
     console.error('Error fetching YouTube metadata:', error);

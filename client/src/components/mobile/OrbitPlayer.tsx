@@ -98,7 +98,7 @@ export default function OrbitPlayer({ room, socket }: { room: any; socket: any }
       {/* Background Decor */}
       {thumbnailUrl && (
         <div 
-          className="absolute inset-0 z-0 opacity-[0.15] blur-[80px] scale-150 transition-all duration-1000"
+          className="absolute inset-0 z-0 opacity-[0.15] blur-3xl scale-150 transition-all duration-1000 transform-gpu"
           style={{ backgroundImage: `url(${thumbnailUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
         />
       )}
@@ -139,7 +139,7 @@ export default function OrbitPlayer({ room, socket }: { room: any; socket: any }
             strokeDasharray={`${displayFraction * TRACK_LENGTH} ${CIRCUMFERENCE}`} 
             strokeLinecap="round"
             transform={`rotate(135, ${CENTER}, ${CENTER})`} 
-            className="transition-all duration-75 ease-out"
+            className="transition-all duration-200 ease-linear"
           />
 
           {/* Draggable Thumb */}
@@ -149,14 +149,14 @@ export default function OrbitPlayer({ room, socket }: { room: any; socket: any }
               cy={thumbY} 
               r="12" 
               fill="white" 
-              className={`transition-all duration-75 ease-out cursor-pointer ${isDragging ? 'scale-125' : 'hover:scale-110'}`}
+              className={`transition-all ${isDragging ? 'duration-75 ease-out scale-125' : 'duration-200 ease-linear hover:scale-110'} cursor-pointer`}
               style={{ filter: 'drop-shadow(0px 0px 8px rgba(255,255,255,0.5))' }}
             />
           )}
         </svg>
 
         {/* Center Vinyl */}
-        <div className={`w-[200px] h-[200px] rounded-full shadow-2xl relative overflow-hidden transition-transform duration-500 ${playback?.url && actualPlaying && !isDragging ? 'animate-[spin_4s_linear_infinite]' : ''}`}
+        <div className={`w-[200px] h-[200px] rounded-full shadow-2xl relative overflow-hidden transition-transform duration-500 ${playback?.url && actualPlaying && !isDragging ? 'animate-[spin_4s_steps(120)_infinite]' : ''}`}
              style={{ animationPlayState: playback?.url && actualPlaying && !isDragging ? 'running' : 'paused' }}>
           {playback?.url && thumbnailUrl ? (
             <>

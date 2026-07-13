@@ -355,13 +355,13 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
             }
           }
         }
-      }, 500);
+      }, 200);
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [actualPlaying, playback?.type, ytPlayer, spotifyPlayer, socket]);
+  }, [playback, ytPlayer, spotifyPlayer, actualPlaying, socket]);
 
   // VOLUME SYNC
   useEffect(() => {
