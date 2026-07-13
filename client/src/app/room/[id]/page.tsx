@@ -5,6 +5,8 @@ import LeftPanel from '@/components/LeftPanel';
 import CenterPanel from '@/components/CenterPanel';
 import RightPanel from '@/components/RightPanel';
 import { useRouter } from 'next/navigation';
+import { PlaybackProvider } from '@/lib/PlaybackContext';
+import MobileRoomLayout from '@/components/mobile/MobileRoomLayout';
 
 export default function RoomPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -112,25 +114,30 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         </button>
       </header>
       
-      {/* 3-Column Layout */}
-      <main className="flex-1 w-full max-w-[1600px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-72px)] overflow-hidden">
-        
-        {/* Left Panel: 3/12 */}
-        <div className="hidden lg:block lg:col-span-3 h-full overflow-hidden">
-          <LeftPanel room={room} />
-        </div>
-        
-        {/* Center Panel: 6/12 */}
-        <div className="col-span-1 lg:col-span-6 h-full overflow-hidden">
-          <CenterPanel room={room} socket={socket} />
-        </div>
+      <PlaybackProvider room={room} socket={socket}>
+        {/* Desktop Layout (Hidden on mobile) */}
+        <main className="hidden lg:grid flex-1 w-full max-w-[1600px] mx-auto p-6 grid-cols-12 gap-6 h-[calc(100vh-72px)] overflow-hidden">
+          {/* Left Panel: 3/12 */}
+          <div className="col-span-3 h-full overflow-hidden">
+            <LeftPanel room={room} />
+          </div>
+          
+          {/* Center Panel: 6/12 */}
+          <div className="col-span-6 h-full overflow-hidden">
+            <CenterPanel room={room} socket={socket} />
+          </div>
 
-        {/* Right Panel: 3/12 */}
-        <div className="hidden lg:block lg:col-span-3 h-full overflow-hidden">
-          <RightPanel room={room} socket={socket} isHost={isHost} />
-        </div>
+          {/* Right Panel: 3/12 */}
+          <div className="col-span-3 h-full overflow-hidden">
+            <RightPanel room={room} socket={socket} isHost={isHost} />
+          </div>
+        </main>
 
-      </main>
+        {/* Mobile Layout (Hidden on desktop) */}
+        <div className="block lg:hidden flex-1 h-[calc(100vh-72px)] overflow-hidden relative">
+          <MobileRoomLayout room={room} socket={socket} />
+        </div>
+      </PlaybackProvider>
     </div>
   );
 }
