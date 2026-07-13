@@ -16,6 +16,7 @@ export default function CenterPanel({ room, socket }: { room: any; socket: any }
     handleSeek,
     handleNext,
     handlePrev,
+    ytPlayer,
   } = usePlayback();
 
   const isHost = room?.host === socket?.id;
@@ -57,8 +58,18 @@ export default function CenterPanel({ room, socket }: { room: any; socket: any }
             Browsers require you to interact with the page before audio can play automatically.
           </p>
           <button 
-            onClick={() => setHasInteracted(true)}
-            className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform"
+            onClick={() => {
+              if (ytPlayer && ytPlayer.playVideo && ytPlayer.pauseVideo) {
+                try {
+                  ytPlayer.playVideo();
+                  if (!playback?.isPlaying) {
+                    ytPlayer.pauseVideo();
+                  }
+                } catch (e) {}
+              }
+              setHasInteracted(true);
+            }}
+            className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.3)]"
           >
             Click here to enable sound
           </button>
@@ -77,9 +88,9 @@ export default function CenterPanel({ room, socket }: { room: any; socket: any }
         />
       )}
 
-      <div className="flex-1 flex items-center justify-center w-full z-10 relative mt-8">
+      <div className="flex-1 flex items-center justify-center w-full z-10 relative mt-4">
         {playback?.url && thumbnailUrl ? (
-          <div className="relative group perspective-1000">
+          <div className="relative group perspective-1000 flex flex-col items-center">
             {/* The Vinyl Record */}
             <div className={`w-[360px] h-[360px] rounded-full border border-white/5 shadow-2xl relative overflow-hidden transition-transform duration-500 group-hover:scale-105 ${actualPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}
                  style={{ animationPlayState: actualPlaying ? 'running' : 'paused' }}>
@@ -95,6 +106,18 @@ export default function CenterPanel({ room, socket }: { room: any; socket: any }
                 style={{ backgroundImage: `url(${thumbnailUrl})` }}
               />
               <div className="absolute inset-[48%] bg-black rounded-full border border-white/20 z-20" />
+            </div>
+
+            {/* Track Info */}
+            <div className="mt-8 flex flex-col items-center gap-2 text-center px-4 w-full max-w-[500px]">
+              <h2 className="text-3xl font-bold text-white tracking-tight line-clamp-1" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+                {playback?.metadata?.title || 'Unknown Title'}
+              </h2>
+              <p className="text-base font-medium text-[var(--color-on-surface-variant)] flex items-center gap-2 drop-shadow-md">
+                {playback?.type === 'youtube' && <span className="material-symbols-outlined text-[18px]">play_circle</span>}
+                {playback?.type === 'spotify' && <span className="material-symbols-outlined text-[18px]">library_music</span>}
+                {playback?.metadata?.artist || 'Unknown Artist'}
+              </p>
             </div>
           </div>
         ) : (
