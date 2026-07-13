@@ -34,8 +34,8 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     };
   }, []);
 
-  const handleJoin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleJoin = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (!userName.trim() || !socket) return;
     
     socket.emit('join-room', { roomId, name: userName.trim() }, (response: any) => {
@@ -70,10 +70,10 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               className="w-full px-4 py-3 bg-[var(--color-background)] border border-[var(--color-outline)] rounded-lg text-white focus:outline-none focus:border-[var(--color-primary)] transition-colors"
-              autoFocus
             />
             <button 
               type="submit"
+              onClick={handleJoin}
               disabled={!userName.trim()}
               className="w-full py-3 bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 rounded-lg font-bold transition-colors shadow-sm"
             >
