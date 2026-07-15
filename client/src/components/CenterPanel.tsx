@@ -1,6 +1,7 @@
 'use client';
 
 import { usePlayback } from '@/lib/PlaybackContext';
+import { extractYouTubeVideoId } from '@/lib/urlUtils';
 
 export default function CenterPanel({ room, socket }: { room: any; socket: any }) {
   const {
@@ -21,8 +22,7 @@ export default function CenterPanel({ room, socket }: { room: any; socket: any }
 
   const isHost = room?.host === socket?.id;
   const playback = room?.playback;
-  const match = (playback?.url || '').match(/(?:v=|youtu\.be\/)([^&]+)/);
-  const videoId = match ? match[1] : null;
+  const videoId = extractYouTubeVideoId(playback?.url || '');
   const thumbnailUrl = videoId 
     ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` 
     : (playback?.type === 'spotify' ? '/spotify-default.jpg' : null);

@@ -18,10 +18,15 @@ export function extractSpotifyTrackId(url: string): string | null {
   return match ? match[1] : null;
 }
 
+export function extractYouTubeVideoId(url: string): string | null {
+  if (!url) return null;
+  const match = url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([^&?]+)/);
+  return match ? match[1] : null;
+}
+
 export async function fetchYouTubeMetadata(url: string): Promise<SongMetadata | null> {
   try {
-    const match = url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([^&?]+)/);
-    const videoId = match ? match[1] : null;
+    const videoId = extractYouTubeVideoId(url);
     
     if (!videoId) return null;
     const normalizedUrl = `https://www.youtube.com/watch?v=${videoId}`;

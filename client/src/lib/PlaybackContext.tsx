@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useRef, useState, useEffect, useCallback, ReactNode } from 'react';
-import { extractSpotifyTrackId } from '@/lib/urlUtils';
+import { extractSpotifyTrackId, extractYouTubeVideoId } from '@/lib/urlUtils';
 
 declare global {
   interface Window {
@@ -104,8 +104,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     if (ytPlayer) return;
 
     const loadYT = () => {
-      const match = (playback?.url || '').match(/(?:v=|youtu\.be\/)([^&]+)/);
-      const videoId = match ? match[1] : null;
+      const videoId = extractYouTubeVideoId(playback?.url || '');
 
       if (!ytPlayerContainerRef.current) return;
 
