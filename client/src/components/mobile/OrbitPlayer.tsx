@@ -216,7 +216,7 @@ export default function OrbitPlayer({ room, socket }: { room: any; socket: any }
           
           <button 
             onClick={handlePlayPause}
-            disabled={!playback?.url}
+            disabled={!isHost || !playback?.url}
             className="w-[72px] h-[72px] flex items-center justify-center rounded-full bg-white text-black hover:scale-105 transition-transform disabled:opacity-30 shadow-[0_0_20px_rgba(255,255,255,0.15)]"
           >
             <span className="material-symbols-outlined text-[36px] ml-1">

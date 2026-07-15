@@ -115,6 +115,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
           controls: 0,
           disablekb: 1,
           fs: 0,
+          playsinline: 1,
           modestbranding: 1,
           origin: typeof window !== 'undefined' ? window.location.origin : '',
         },
@@ -413,9 +414,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
       if (newIsPlaying) spotifyPlayer.resume().catch(() => {});
       else spotifyPlayer.pause().catch(() => {});
     }
-    if (isHostRef.current) {
-      socket?.emit('playback-sync', { isPlaying: newIsPlaying, played: currentPlayedFractionRef.current });
-    }
+    socket?.emit('playback-sync', { isPlaying: newIsPlaying, played: currentPlayedFractionRef.current });
   };
 
   const handleSeek = (fraction: number) => {
@@ -428,9 +427,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     } else if (playback?.type === 'spotify' && spotifyPlayer) {
       spotifyPlayer.seek(fraction * currentDurationRef.current).catch(() => {});
     }
-    if (isHostRef.current) {
-      socket?.emit('playback-sync', { isPlaying: actualPlaying, played: fraction });
-    }
+    socket?.emit('playback-sync', { isPlaying: actualPlaying, played: fraction });
   };
 
   const handleNext = () => socket?.emit('play-next');
