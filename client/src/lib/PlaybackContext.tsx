@@ -33,7 +33,21 @@ const PlaybackContext = createContext<PlaybackContextType | null>(null);
 export function PlaybackProvider({ room, socket, children }: { room: any; socket: any; children: ReactNode }) {
   // Global States
   const [actualPlaying, setActualPlaying] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [hasInteracted, setHasInteractedState] = useState(false);
+  
+  const setHasInteracted = useCallback((v: boolean) => {
+    setHasInteractedState(v);
+    if (v && typeof window !== 'undefined') {
+      sessionStorage.setItem('syncwave_interacted', 'true');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('syncwave_interacted') === 'true') {
+      setHasInteractedState(true);
+    }
+  }, []);
+
   const [volume, setVolume] = useState(0.8);
   const [isReady, setIsReady] = useState(false);
   
@@ -356,6 +370,16 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
             }
           }
         }
+        // Update Media Session Position for background scrubbing
+        if ('mediaSession' in navigator && navigator.mediaSession.setPositionState) {
+          try {
+            navigator.mediaSession.setPositionState({
+              duration: currentDurationRef.current / 1000,
+              playbackRate: 1,
+              position: (currentPlayedFractionRef.current * currentDurationRef.current) / 1000
+            });
+          } catch (e) {}
+        }
       }, 200);
     }
 
@@ -418,7 +442,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
   return (
     <PlaybackContext.Provider value={value}>
       {/* Hidden YouTube Player (always preserved regardless of UI layout) */}
-      <div className="absolute left-[-9999px] top-0 pointer-events-none w-[200px] h-[200px] overflow-hidden opacity-0">
+      <div className="fixed left-0 top-0 pointer-events-none w-[200px] h-[200px] overflow-hidden opacity-100 z-[-50]">
         <div ref={ytPlayerContainerRef}></div>
       </div>
       {children}
