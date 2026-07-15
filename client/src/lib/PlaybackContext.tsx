@@ -104,7 +104,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     if (ytPlayer) return;
 
     const loadYT = () => {
-      const match = (playback.url || '').match(/(?:v=|youtu\.be\/)([^&]+)/);
+      const match = (playback?.url || '').match(/(?:v=|youtu\.be\/)([^&]+)/);
       const videoId = match ? match[1] : null;
 
       if (!ytPlayerContainerRef.current) return;
