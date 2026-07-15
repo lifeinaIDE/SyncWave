@@ -27,6 +27,7 @@ interface PlaybackContextType {
   handleNext: () => void;
   handlePrev: () => void;
   ytPlayer: any;
+  spotifyPlayer: any;
 }
 
 const PlaybackContext = createContext<PlaybackContextType | null>(null);
@@ -449,6 +450,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     handleNext,
     handlePrev,
     ytPlayer,
+    spotifyPlayer,
   };
 
   return (
