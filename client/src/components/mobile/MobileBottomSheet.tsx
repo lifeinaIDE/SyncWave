@@ -12,7 +12,7 @@ export default function MobileBottomSheet({ room, socket, sheetState, setSheetSt
   const isHost = room?.host === socket?.id;
   const [url, setUrl] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-
+  const { ytPlayer, spotifyPlayer } = usePlayback();
   const controls = useAnimation();
 
   const handleAddSong = async (e: React.FormEvent) => {
@@ -20,6 +20,19 @@ export default function MobileBottomSheet({ room, socket, sheetState, setSheetSt
     const rawUrl = url.trim();
     if (!rawUrl || !socket) return;
     
+    // Unlock media players during this user gesture
+    if (ytPlayer && ytPlayer.playVideo && ytPlayer.pauseVideo) {
+      try { 
+        ytPlayer.mute();
+        ytPlayer.playVideo(); 
+        ytPlayer.pauseVideo(); 
+        ytPlayer.unMute();
+      } catch (e) {}
+    }
+    if (spotifyPlayer) {
+      try { spotifyPlayer.resume().then(() => spotifyPlayer.pause()).catch(() => {}); } catch (e) {}
+    }
+
     setIsAdding(true);
     const type = detectPlatform(rawUrl);
     let metadata = null;

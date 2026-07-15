@@ -11,7 +11,7 @@ import MobileRoomLayout from '@/components/mobile/MobileRoomLayout';
 function JoinScreen({ 
   roomId, userName, setUserName, isConnected, isJoining, onJoin, onCancel
 }: any) {
-  const { ytPlayer } = usePlayback();
+  const { ytPlayer, isReady } = usePlayback();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,8 +19,10 @@ function JoinScreen({
     // Autoplay unlock hack: play and immediately pause on user interaction
     if (ytPlayer && ytPlayer.playVideo && ytPlayer.pauseVideo) {
       try {
+        ytPlayer.mute();
         ytPlayer.playVideo();
         ytPlayer.pauseVideo();
+        ytPlayer.unMute();
       } catch (err) {}
     }
 
@@ -46,13 +48,15 @@ function JoinScreen({
           />
           <button 
             type="submit"
-            disabled={!userName.trim() || !isConnected || isJoining}
+            disabled={!userName.trim() || !isConnected || isJoining || !isReady}
             className="w-full py-3 bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-50 rounded-lg font-bold transition-colors shadow-sm flex items-center justify-center gap-2"
           >
             {isJoining ? (
               <><span className="material-symbols-outlined animate-spin text-[20px]">sync</span> Joining...</>
             ) : !isConnected ? (
               <><span className="material-symbols-outlined animate-spin text-[20px]">sync</span> Waking Server...</>
+            ) : !isReady ? (
+              <><span className="material-symbols-outlined animate-spin text-[20px]">sync</span> Loading Player...</>
             ) : (
               'Join Session'
             )}

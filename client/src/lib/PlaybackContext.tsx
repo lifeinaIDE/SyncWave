@@ -21,6 +21,7 @@ interface PlaybackContextType {
   currentPlayedFraction: number;
   currentDurationMs: number;
   spotifyError: string | null;
+  isReady: boolean;
   handlePlayPause: () => void;
   handleSeek: (fraction: number) => void;
   handleNext: () => void;
@@ -99,16 +100,16 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
 
   // YOUTUBE INIT
   useEffect(() => {
-    if (playback?.type !== 'youtube' || ytPlayer) return;
+    if (ytPlayer) return;
 
     const loadYT = () => {
       const match = (playback.url || '').match(/(?:v=|youtu\.be\/)([^&]+)/);
       const videoId = match ? match[1] : null;
 
-      if (!videoId || !ytPlayerContainerRef.current) return;
+      if (!ytPlayerContainerRef.current) return;
 
       const player = new window.YT.Player(ytPlayerContainerRef.current, {
-        videoId: videoId,
+        videoId: videoId || 'dQw4w9WgXcQ', // Dummy video to initialize player eagerly
         playerVars: {
           autoplay: 1,
           controls: 0,
@@ -146,13 +147,13 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     } else {
       loadYT();
     }
-  }, [playback?.type, playback?.url]); 
+  }, []); // Eager init on mount
 
   // SPOTIFY INIT
   const isSpotifyInitRef = useRef(false);
 
   useEffect(() => {
-    if (playback?.type !== 'spotify' || !spotifyToken) return;
+    if (!spotifyToken) return;
 
     const initSpotify = () => {
       if (isSpotifyInitRef.current) return;
@@ -199,7 +200,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     }
 
     return () => {};
-  }, [playback?.type, spotifyToken, volume]);
+  }, [spotifyToken, volume]);
 
   const playSpotifyTrack = useCallback(async (trackId: string, positionMs: number = 0, targetPlaying: boolean) => {
     if (!deviceId || !spotifyToken) return;
@@ -403,6 +404,16 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     if (!hasInteracted) return;
     const newIsPlaying = !actualPlaying;
     setActualPlaying(newIsPlaying);
+    
+    // Synchronous execution for mobile browser gesture tracking
+    if (playback?.type === 'youtube' && ytPlayer) {
+      if (newIsPlaying) ytPlayer.playVideo?.();
+      else ytPlayer.pauseVideo?.();
+    } else if (playback?.type === 'spotify' && spotifyPlayer) {
+      if (newIsPlaying) spotifyPlayer.resume().catch(() => {});
+      else spotifyPlayer.pause().catch(() => {});
+    }
+
     socket?.emit('playback-sync', { isPlaying: newIsPlaying, played: currentPlayedFractionRef.current });
   };
 
@@ -432,6 +443,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     currentPlayedFraction,
     currentDurationMs,
     spotifyError,
+    isReady,
     handlePlayPause,
     handleSeek,
     handleNext,
