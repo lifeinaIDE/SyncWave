@@ -48,8 +48,8 @@ export default function MiniPlayer({ room, socket, onClick }: { room: any; socke
       {/* Controls */}
       <div className="flex items-center gap-2 shrink-0 pr-1">
         <button 
-          onClick={(e) => { e.stopPropagation(); if (isHost) handlePlayPause(); }}
-          disabled={!isHost || !playback?.url}
+          onClick={(e) => { e.stopPropagation(); handlePlayPause(); }}
+          disabled={!playback?.url}
           className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-black disabled:opacity-30 disabled:bg-white/10 disabled:text-white"
         >
           <span className="material-symbols-outlined text-[20px] ml-0.5">

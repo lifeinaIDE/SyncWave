@@ -413,8 +413,9 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
       if (newIsPlaying) spotifyPlayer.resume().catch(() => {});
       else spotifyPlayer.pause().catch(() => {});
     }
-
-    socket?.emit('playback-sync', { isPlaying: newIsPlaying, played: currentPlayedFractionRef.current });
+    if (isHostRef.current) {
+      socket?.emit('playback-sync', { isPlaying: newIsPlaying, played: currentPlayedFractionRef.current });
+    }
   };
 
   const handleSeek = (fraction: number) => {
@@ -427,8 +428,9 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     } else if (playback?.type === 'spotify' && spotifyPlayer) {
       spotifyPlayer.seek(fraction * currentDurationRef.current).catch(() => {});
     }
-
-    socket?.emit('playback-sync', { isPlaying: actualPlaying, played: fraction });
+    if (isHostRef.current) {
+      socket?.emit('playback-sync', { isPlaying: actualPlaying, played: fraction });
+    }
   };
 
   const handleNext = () => socket?.emit('play-next');

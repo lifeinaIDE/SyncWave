@@ -190,7 +190,7 @@ export default function CenterPanel({ room, socket }: { room: any; socket: any }
             
             <button 
               onClick={handlePlayPause}
-              disabled={!isHost || !playback?.url}
+              disabled={!playback?.url}
               className="w-16 h-16 flex items-center justify-center rounded-full bg-white text-black hover:scale-105 transition-transform disabled:opacity-30 disabled:hover:scale-100 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(255,255,255,0.2)]"
             >
               <span className="material-symbols-outlined text-[36px] ml-1">
