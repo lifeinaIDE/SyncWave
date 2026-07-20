@@ -28,6 +28,8 @@ interface PlaybackContextType {
   handlePrev: () => void;
   ytPlayer: any;
   spotifyPlayer: any;
+  videoBounds: { top: number; left: number; width: number; height: number; active: boolean };
+  setVideoBounds: (bounds: { top: number; left: number; width: number; height: number; active: boolean }) => void;
 }
 
 const PlaybackContext = createContext<PlaybackContextType | null>(null);
@@ -36,6 +38,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
   // Global States
   const [actualPlaying, setActualPlaying] = useState(false);
   const [hasInteracted, setHasInteractedState] = useState(false);
+  const [videoBounds, setVideoBounds] = useState({ top: 0, left: 0, width: 0, height: 0, active: false });
   
   const setHasInteracted = useCallback((v: boolean) => {
     setHasInteractedState(v);
@@ -449,13 +452,25 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     handlePrev,
     ytPlayer,
     spotifyPlayer,
+    videoBounds,
+    setVideoBounds,
   };
 
   return (
     <PlaybackContext.Provider value={value}>
-      {/* Hidden YouTube Player (always preserved regardless of UI layout) */}
-      <div className="fixed left-0 top-0 pointer-events-none w-[200px] h-[200px] overflow-hidden opacity-100 z-[-50]">
-        <div ref={ytPlayerContainerRef}></div>
+      {/* Hidden YouTube Player (dynamically positions over UI vinyls when active) */}
+      <div 
+        className="fixed pointer-events-none rounded-full overflow-hidden transition-all duration-300 ease-out"
+        style={{
+          top: videoBounds.active ? videoBounds.top : 0,
+          left: videoBounds.active ? videoBounds.left : 0,
+          width: videoBounds.active ? videoBounds.width : 200,
+          height: videoBounds.active ? videoBounds.height : 200,
+          zIndex: videoBounds.active ? 10 : -50,
+          opacity: videoBounds.active ? 1 : 0.01,
+        }}
+      >
+        <div ref={ytPlayerContainerRef} className="w-[300%] h-[300%] -ml-[100%] -mt-[100%] pointer-events-none"></div>
       </div>
       {children}
     </PlaybackContext.Provider>
@@ -468,4 +483,43 @@ export function usePlayback() {
     throw new Error('usePlayback must be used within a PlaybackProvider');
   }
   return context;
+}
+
+export function useTrackVideoBounds(playback: any) {
+  const { setVideoBounds } = usePlayback();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current || playback?.type !== 'youtube') {
+      setVideoBounds({ top: 0, left: 0, width: 0, height: 0, active: false });
+      return;
+    }
+
+    let animationFrameId: number;
+    const updateBounds = () => {
+      if (ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        // Check if the element is actually visible and has dimensions
+        if (rect.width > 0 && rect.height > 0) {
+          setVideoBounds({
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+            active: true
+          });
+        }
+      }
+      animationFrameId = requestAnimationFrame(updateBounds);
+    };
+
+    animationFrameId = requestAnimationFrame(updateBounds);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      setVideoBounds({ top: 0, left: 0, width: 0, height: 0, active: false });
+    };
+  }, [playback?.url, playback?.type, setVideoBounds]);
+
+  return ref;
 }

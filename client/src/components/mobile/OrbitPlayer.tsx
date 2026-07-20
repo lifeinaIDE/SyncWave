@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { usePlayback } from '@/lib/PlaybackContext';
+import { usePlayback, useTrackVideoBounds } from '@/lib/PlaybackContext';
 import { extractYouTubeVideoId } from '@/lib/urlUtils';
 
 export default function OrbitPlayer({ room, socket }: { room: any; socket: any }) {
@@ -23,6 +23,7 @@ export default function OrbitPlayer({ room, socket }: { room: any; socket: any }
 
   const isHost = room?.host === socket?.id;
   const playback = room?.playback;
+  const videoBoundsRef = useTrackVideoBounds(playback);
   const videoId = extractYouTubeVideoId(playback?.url || '');
   const thumbnailUrl = videoId 
     ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` 
@@ -155,28 +156,34 @@ export default function OrbitPlayer({ room, socket }: { room: any; socket: any }
           )}
         </svg>
 
-        {/* Center Vinyl */}
-        <div className={`w-[200px] h-[200px] rounded-full shadow-2xl relative overflow-hidden transition-transform duration-500 ${playback?.url && actualPlaying && !isDragging ? 'animate-[spin_4s_steps(120)_infinite]' : ''}`}
-             style={{ animationPlayState: playback?.url && actualPlaying && !isDragging ? 'running' : 'paused' }}>
-          {playback?.url && thumbnailUrl ? (
-            <>
-              <div className="absolute inset-0 bg-black rounded-full border border-white/10">
-                <div className="absolute inset-2 border-[0.5px] border-white/10 rounded-full" />
-                <div className="absolute inset-4 border-[0.5px] border-white/10 rounded-full" />
-                <div className="absolute inset-6 border-[0.5px] border-white/10 rounded-full" />
-                <div className="absolute inset-8 border-[0.5px] border-white/10 rounded-full" />
+        {/* Center Vinyl Container */}
+        <div className="relative w-[200px] h-[200px]">
+          {/* Static Tracker for YouTube Iframe */}
+          <div ref={videoBoundsRef} className="absolute inset-[25%] pointer-events-none z-0" />
+          
+          {/* Spinning Vinyl */}
+          <div className={`absolute inset-0 rounded-full shadow-2xl overflow-hidden transition-transform duration-500 ${playback?.url && actualPlaying && !isDragging ? 'animate-[spin_4s_steps(120)_infinite]' : ''}`}
+               style={{ animationPlayState: playback?.url && actualPlaying && !isDragging ? 'running' : 'paused' }}>
+            {playback?.url && thumbnailUrl ? (
+              <>
+                <div className="absolute inset-0 bg-black rounded-full border border-white/10">
+                  <div className="absolute inset-2 border-[0.5px] border-white/10 rounded-full" />
+                  <div className="absolute inset-4 border-[0.5px] border-white/10 rounded-full" />
+                  <div className="absolute inset-6 border-[0.5px] border-white/10 rounded-full" />
+                  <div className="absolute inset-8 border-[0.5px] border-white/10 rounded-full" />
+                </div>
+                <div 
+                  className="absolute inset-[25%] rounded-full shadow-inner border border-white/10 z-10 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${thumbnailUrl})` }}
+                />
+                <div className="absolute inset-[45%] bg-black rounded-full border border-white/20 z-20" />
+              </>
+            ) : (
+              <div className="absolute inset-0 bg-white/5 border border-white/10 rounded-full flex flex-col items-center justify-center text-[var(--color-on-surface-variant)]">
+                <span className="material-symbols-outlined text-[48px] opacity-50">album</span>
               </div>
-              <div 
-                className="absolute inset-[25%] rounded-full shadow-inner border border-white/10 z-10 bg-cover bg-center"
-                style={{ backgroundImage: `url(${thumbnailUrl})` }}
-              />
-              <div className="absolute inset-[45%] bg-black rounded-full border border-white/20 z-20" />
-            </>
-          ) : (
-            <div className="absolute inset-0 bg-white/5 border border-white/10 rounded-full flex flex-col items-center justify-center text-[var(--color-on-surface-variant)]">
-              <span className="material-symbols-outlined text-[48px] opacity-50">album</span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 

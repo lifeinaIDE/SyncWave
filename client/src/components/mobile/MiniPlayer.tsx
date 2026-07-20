@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { usePlayback } from '@/lib/PlaybackContext';
+import { usePlayback, useTrackVideoBounds } from '@/lib/PlaybackContext';
 import { extractYouTubeVideoId } from '@/lib/urlUtils';
 
 export default function MiniPlayer({ room, socket, onClick }: { room: any; socket: any, onClick: () => void }) {
@@ -15,6 +15,7 @@ export default function MiniPlayer({ room, socket, onClick }: { room: any; socke
 
   const isHost = room?.host === socket?.id;
   const playback = room?.playback;
+  const videoBoundsRef = useTrackVideoBounds(playback);
   const videoId = extractYouTubeVideoId(playback?.url || '');
   const thumbnailUrl = videoId 
     ? `https://img.youtube.com/vi/${videoId}/default.jpg` 
@@ -29,7 +30,7 @@ export default function MiniPlayer({ room, socket, onClick }: { room: any; socke
       onClick={onClick}
     >
       {/* Tiny Artwork */}
-      <div className="w-12 h-12 rounded-full bg-black shrink-0 overflow-hidden border border-white/10 relative">
+      <div ref={videoBoundsRef} className="w-12 h-12 rounded-full bg-black shrink-0 overflow-hidden border border-white/10 relative">
         {thumbnailUrl ? (
           <img src={thumbnailUrl} className={`w-full h-full object-cover ${actualPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`} style={{ animationPlayState: actualPlaying ? 'running' : 'paused' }} alt="" />
         ) : (

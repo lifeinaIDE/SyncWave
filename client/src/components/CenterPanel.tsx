@@ -1,6 +1,6 @@
 'use client';
 
-import { usePlayback } from '@/lib/PlaybackContext';
+import { usePlayback, useTrackVideoBounds } from '@/lib/PlaybackContext';
 import { extractYouTubeVideoId } from '@/lib/urlUtils';
 
 export default function CenterPanel({ room, socket }: { room: any; socket: any }) {
@@ -22,6 +22,8 @@ export default function CenterPanel({ room, socket }: { room: any; socket: any }
 
   const isHost = room?.host === socket?.id;
   const playback = room?.playback;
+  const videoBoundsRef = useTrackVideoBounds(playback);
+
   const videoId = extractYouTubeVideoId(playback?.url || '');
   const thumbnailUrl = videoId 
     ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` 
@@ -91,21 +93,27 @@ export default function CenterPanel({ room, socket }: { room: any; socket: any }
       <div className="flex-1 flex items-center justify-center w-full z-10 relative mt-4">
         {playback?.url && thumbnailUrl ? (
           <div className="relative group perspective-1000 flex flex-col items-center">
-            {/* The Vinyl Record */}
-            <div className={`w-[360px] h-[360px] rounded-full border border-white/5 shadow-2xl relative overflow-hidden transition-transform duration-500 group-hover:scale-105 ${actualPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}
-                 style={{ animationPlayState: actualPlaying ? 'running' : 'paused' }}>
-              <div className="absolute inset-0 bg-black rounded-full">
-                <div className="absolute inset-2 border-[0.5px] border-white/10 rounded-full" />
-                <div className="absolute inset-4 border-[0.5px] border-white/10 rounded-full" />
-                <div className="absolute inset-6 border-[0.5px] border-white/10 rounded-full" />
-                <div className="absolute inset-8 border-[0.5px] border-white/10 rounded-full" />
-                <div className="absolute inset-10 border-[0.5px] border-white/10 rounded-full" />
+            {/* Center Vinyl Container */}
+            <div className="relative w-[360px] h-[360px]">
+              {/* Static Tracker for YouTube Iframe */}
+              <div ref={videoBoundsRef} className="absolute inset-[30%] pointer-events-none z-0" />
+              
+              {/* Spinning Vinyl */}
+              <div className={`absolute inset-0 rounded-full border border-white/5 shadow-2xl overflow-hidden transition-transform duration-500 group-hover:scale-105 ${actualPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}
+                   style={{ animationPlayState: actualPlaying ? 'running' : 'paused' }}>
+                <div className="absolute inset-0 bg-black rounded-full">
+                  <div className="absolute inset-2 border-[0.5px] border-white/10 rounded-full" />
+                  <div className="absolute inset-4 border-[0.5px] border-white/10 rounded-full" />
+                  <div className="absolute inset-6 border-[0.5px] border-white/10 rounded-full" />
+                  <div className="absolute inset-8 border-[0.5px] border-white/10 rounded-full" />
+                  <div className="absolute inset-10 border-[0.5px] border-white/10 rounded-full" />
+                </div>
+                <div 
+                  className="absolute inset-[30%] rounded-full shadow-inner border border-white/10 z-10 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${thumbnailUrl})` }}
+                />
+                <div className="absolute inset-[48%] bg-black rounded-full border border-white/20 z-20" />
               </div>
-              <div 
-                className="absolute inset-[30%] rounded-full shadow-inner border border-white/10 z-10 bg-cover bg-center"
-                style={{ backgroundImage: `url(${thumbnailUrl})` }}
-              />
-              <div className="absolute inset-[48%] bg-black rounded-full border border-white/20 z-20" />
             </div>
 
             {/* Track Info */}
