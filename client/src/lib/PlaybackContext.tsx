@@ -433,6 +433,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     
     // Synchronous execution for mobile browser gesture tracking
     if (playback?.type === 'youtube' && ytPlayer) {
+      ytPlayer.unMute?.();
       if (newIsPlaying) ytPlayer.playVideo?.();
       else ytPlayer.pauseVideo?.();
     } else if (playback?.type === 'spotify' && spotifyPlayer) {
@@ -447,8 +448,12 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     setHasInteracted(true);
     setSyncRequired(false);
     
-    if (playback?.type === 'youtube' && ytPlayer) ytPlayer.playVideo?.();
-    else if (playback?.type === 'spotify' && spotifyPlayer) spotifyPlayer.resume().catch(() => {});
+    if (playback?.type === 'youtube' && ytPlayer) {
+      ytPlayer.unMute?.();
+      ytPlayer.playVideo?.();
+    } else if (playback?.type === 'spotify' && spotifyPlayer) {
+      spotifyPlayer.resume().catch(() => {});
+    }
     
     setActualPlaying(true);
   };
@@ -457,6 +462,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     setHasInteracted(true);
     // Explicitly force the audio context open globally for all subsequent automated calls
     if (ytPlayer) {
+      ytPlayer.unMute?.();
       ytPlayer.playVideo?.();
       setTimeout(() => {
         if (!playback?.isPlaying) {
