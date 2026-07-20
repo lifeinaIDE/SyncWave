@@ -23,6 +23,7 @@ interface PlaybackContextType {
   spotifyError: string | null;
   isReady: boolean;
   handlePlayPause: () => void;
+  handleManualSync: () => void;
   handleSeek: (fraction: number) => void;
   handleNext: () => void;
   handlePrev: () => void;
@@ -30,6 +31,7 @@ interface PlaybackContextType {
   spotifyPlayer: any;
   videoBounds: { top: number; left: number; width: number; height: number; active: boolean };
   setVideoBounds: (bounds: { top: number; left: number; width: number; height: number; active: boolean }) => void;
+  syncRequired: boolean;
 }
 
 const PlaybackContext = createContext<PlaybackContextType | null>(null);
@@ -37,6 +39,7 @@ const PlaybackContext = createContext<PlaybackContextType | null>(null);
 export function PlaybackProvider({ room, socket, children }: { room: any; socket: any; children: ReactNode }) {
   // Global States
   const [actualPlaying, setActualPlaying] = useState(false);
+  const [syncRequired, setSyncRequired] = useState(false);
   const [hasInteracted, setHasInteractedState] = useState(false);
   const [videoBounds, setVideoBounds] = useState({ top: 0, left: 0, width: 0, height: 0, active: false });
   
@@ -306,7 +309,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
       navigator.mediaSession.setActionHandler('play', () => {
         setActualPlaying(true);
         if (playback.type === 'youtube') ytPlayer?.playVideo?.();
-        else if (playback.type === 'spotify') spotifyPlayer?.resume().catch(() => {});
+        else if (playback.type === 'spotify') spotifyPlayer?.resume().catch(() => setSyncRequired(true));
         socket?.emit('playback-sync', { isPlaying: true, played: currentPlayedFractionRef.current });
       });
 
@@ -403,11 +406,25 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     }
   }, [volume, ytPlayer, spotifyPlayer]);
 
+  // BLOCKAGE DETECTION
+  useEffect(() => {
+    if (actualPlaying) {
+      setSyncRequired(false);
+    } else if (playback?.isPlaying && !actualPlaying && !isHostRef.current) {
+      // If the room is playing but we aren't, wait 2 seconds. If still not playing, the browser blocked it.
+      const timer = setTimeout(() => {
+        setSyncRequired(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [playback?.isPlaying, actualPlaying]);
+
   // CONTROLS
   const handlePlayPause = () => {
     if (!hasInteracted) return;
     const newIsPlaying = !actualPlaying;
     setActualPlaying(newIsPlaying);
+    setSyncRequired(false);
     
     // Synchronous execution for mobile browser gesture tracking
     if (playback?.type === 'youtube' && ytPlayer) {
@@ -418,6 +435,17 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
       else spotifyPlayer.pause().catch(() => {});
     }
     socket?.emit('playback-sync', { isPlaying: newIsPlaying, played: currentPlayedFractionRef.current });
+  };
+
+  const handleManualSync = () => {
+    // Explicitly invoked by the user clicking the "Tap to Sync" overlay on mobile
+    setHasInteracted(true);
+    setSyncRequired(false);
+    
+    if (playback?.type === 'youtube' && ytPlayer) ytPlayer.playVideo?.();
+    else if (playback?.type === 'spotify' && spotifyPlayer) spotifyPlayer.resume().catch(() => {});
+    
+    setActualPlaying(true);
   };
 
   const handleSeek = (fraction: number) => {
@@ -447,6 +475,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     spotifyError,
     isReady,
     handlePlayPause,
+    handleManualSync,
     handleSeek,
     handleNext,
     handlePrev,
@@ -454,6 +483,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     spotifyPlayer,
     videoBounds,
     setVideoBounds,
+    syncRequired,
   };
 
   return (

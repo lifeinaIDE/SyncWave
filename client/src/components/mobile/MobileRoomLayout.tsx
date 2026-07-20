@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { usePlayback } from '@/lib/PlaybackContext';
 import OrbitPlayer from './OrbitPlayer';
 import MobileBottomSheet from './MobileBottomSheet';
 import MobileDrawer from './MobileDrawer';
@@ -10,6 +11,7 @@ import MiniPlayer from './MiniPlayer';
 type SheetState = 'COLLAPSED' | 'HALF' | 'FULL';
 
 export default function MobileRoomLayout({ room, socket }: { room: any; socket: any }) {
+  const { syncRequired, handleManualSync } = usePlayback();
   const [sheetState, setSheetState] = useState<SheetState>('COLLAPSED');
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -97,6 +99,25 @@ export default function MobileRoomLayout({ room, socket }: { room: any; socket: 
         isOpen={drawerOpen} 
         onClose={() => setDrawerOpen(false)} 
       />
+
+      {/* Sync Required Overlay */}
+      <AnimatePresence>
+        {syncRequired && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleManualSync}
+            className="absolute inset-0 z-[100] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center cursor-pointer"
+          >
+            <div className="w-24 h-24 bg-[var(--color-primary)] rounded-full flex items-center justify-center animate-pulse shadow-[0_0_40px_rgba(30,215,96,0.4)] mb-6">
+              <span className="material-symbols-outlined text-white text-5xl">volume_up</span>
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-2">Tap to Sync Audio</h2>
+            <p className="text-[var(--color-on-surface-variant)] text-lg">Your browser paused the music. Tap anywhere to resume playback.</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
