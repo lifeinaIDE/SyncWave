@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useRef, useState, useEffect, useCallback, ReactNode } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { extractSpotifyTrackId, extractYouTubeVideoId } from '@/lib/urlUtils';
 
 declare global {
@@ -452,6 +453,19 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
     setActualPlaying(true);
   };
 
+  const handleInitialUnlock = () => {
+    setHasInteracted(true);
+    // Explicitly force the audio context open globally for all subsequent automated calls
+    if (ytPlayer) {
+      ytPlayer.playVideo?.();
+      setTimeout(() => {
+        if (!playback?.isPlaying) {
+          ytPlayer.pauseVideo?.();
+        }
+      }, 200);
+    }
+  };
+
   const handleSeek = (fraction: number) => {
     setCurrentPlayedFraction(fraction);
     currentPlayedFractionRef.current = fraction;
@@ -506,6 +520,34 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
       >
         <div ref={ytPlayerContainerRef} className="w-[300%] h-[300%] -ml-[100%] -mt-[100%] pointer-events-none"></div>
       </div>
+      
+      {/* Global Audio Context Initializer Overlay */}
+      <AnimatePresence>
+        {!hasInteracted && isReady && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center"
+          >
+            <div className="w-24 h-24 bg-[var(--color-primary)] rounded-full flex items-center justify-center animate-bounce shadow-[0_0_60px_rgba(30,215,96,0.5)] mb-8">
+              <span className="material-symbols-outlined text-white text-5xl">headphones</span>
+            </div>
+            <h1 className="text-4xl font-extrabold text-white tracking-tight mb-4">Start Listening</h1>
+            <p className="text-[var(--color-on-surface-variant)] text-lg mb-10 max-w-sm">
+              SyncWave requires audio permission to perfectly synchronize your music with the room.
+            </p>
+            <button 
+              onClick={handleInitialUnlock}
+              className="px-10 py-4 bg-white text-black text-xl font-bold rounded-full hover:scale-105 active:scale-95 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+            >
+              Enable Audio
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {children}
     </PlaybackContext.Provider>
   );
