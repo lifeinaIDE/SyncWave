@@ -1,5 +1,6 @@
 'use client';
 
+import { AnimatePresence, motion } from 'framer-motion';
 import { usePlayback, useTrackVideoBounds } from '@/lib/PlaybackContext';
 import { extractYouTubeVideoId } from '@/lib/urlUtils';
 
@@ -14,10 +15,12 @@ export default function CenterPanel({ room, socket }: { room: any; socket: any }
     currentDurationMs,
     spotifyError,
     handlePlayPause,
+    handleManualSync,
     handleSeek,
     handleNext,
     handlePrev,
     ytPlayer,
+    syncRequired,
   } = usePlayback();
 
   const isHost = room?.host === socket?.id;
@@ -134,6 +137,25 @@ export default function CenterPanel({ room, socket }: { room: any; socket: any }
             <p className="font-medium tracking-tight">Nothing playing</p>
           </div>
         )}
+
+        {/* Desktop Sync Required Overlay */}
+        <AnimatePresence>
+          {syncRequired && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={handleManualSync}
+              className="absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center cursor-pointer rounded-[40px]"
+            >
+              <div className="w-20 h-20 bg-[var(--color-primary)] rounded-full flex items-center justify-center animate-pulse shadow-[0_0_40px_rgba(30,215,96,0.4)] mb-4">
+                <span className="material-symbols-outlined text-white text-4xl">volume_up</span>
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-1">Tap to Sync Audio</h2>
+              <p className="text-[var(--color-on-surface-variant)]">Your browser paused the music. Tap to resume.</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Modern Controls Footer */}

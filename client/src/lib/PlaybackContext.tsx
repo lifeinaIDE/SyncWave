@@ -410,7 +410,7 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
   useEffect(() => {
     if (actualPlaying) {
       setSyncRequired(false);
-    } else if (playback?.isPlaying && !actualPlaying && !isHostRef.current) {
+    } else if (playback?.isPlaying && !actualPlaying) {
       // If the room is playing but we aren't, wait 2 seconds. If still not playing, the browser blocked it.
       const timer = setTimeout(() => {
         setSyncRequired(true);
@@ -421,10 +421,14 @@ export function PlaybackProvider({ room, socket, children }: { room: any; socket
 
   // CONTROLS
   const handlePlayPause = () => {
-    if (!hasInteracted) return;
+    if (!playback?.url) return;
+    
+    // Explicit user interaction unlocks audio context
+    setHasInteracted(true);
+    setSyncRequired(false);
+    
     const newIsPlaying = !actualPlaying;
     setActualPlaying(newIsPlaying);
-    setSyncRequired(false);
     
     // Synchronous execution for mobile browser gesture tracking
     if (playback?.type === 'youtube' && ytPlayer) {
